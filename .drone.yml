@@ -5,6 +5,14 @@ name: default
 steps:
 - name: hello_word
   image: golang:1.21.5-alpine3.19
+  volumes:
+  - name: temp
+    path: /foo
   commands:
   - go build -o hello main.go
-  - docker cp $(docker ps -q -n=1):hello /home/nikitin_i/drone/temp
+  - cp hello /foo/hello
+
+volumes:
+- name: temp
+  host:
+    path: /home/nikitin_i/drone/temp
