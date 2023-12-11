@@ -6,5 +6,5 @@ steps:
 - name: hello_word
   image: golang:1.21.5-alpine3.19
   commands:
-  - go build hello.go
+  - go build -o hello main.go
   - ./hello
