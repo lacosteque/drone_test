@@ -9,7 +9,7 @@ steps:
   - name: temp
     path: /foo
   commands:
-  - apk add --update --no-cache go
+  - apk add --update --no-cache go=1.16
   - go build -o hello main.go
   - cp hello /foo/hello
 
