@@ -21,7 +21,8 @@ steps:
   - name: temp
     path: /foo
   commands:
-  - |curl --socks5-basic \ 
+  - |
+     curl --socks5-basic \ 
      -s -X POST https://api.telegram.org/bot${TG_TOKEN}/sendDocument -F chat_id=-1001180112580 -F \
      document=@/foo/hello
     
