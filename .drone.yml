@@ -24,7 +24,7 @@ steps:
   - apk add --update --no-cache curl
   - |
      curl --socks5-basic \ 
-     -s -X POST https://api.telegram.org/bot${TG_TOKEN}/sendDocument -F chat_id=-1001180112580 -F \
+     -s -X POST https://api.telegram.org/bot$${TG_TOKEN}/sendDocument -F chat_id=-1001180112580 -F \
      document=@/foo/hello
     
   
