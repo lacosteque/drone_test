@@ -17,15 +17,17 @@ steps:
   environment:
     TG_TOKEN:
       from_secret: tg_token
+    TO: -1001180112580
   volumes:
   - name: temp
     path: /foo
   commands:
   - apk add --update --no-cache curl
   - |
-     curl --socks5-basic \ 
-     -s -X POST https://api.telegram.org/bot$${TG_TOKEN}/sendDocument -F chat_id=-1001180112580 -F \
-     document=@/foo/hello
+     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
+        -F chat_id="$${TO}" \
+        -F parse_mode="HTML" \
+        -F document=@"/foo/hello"
     
   
 
