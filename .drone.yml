@@ -4,16 +4,17 @@ name: default
 
 steps:
 - name: build
-  image: golang:1.21.5-alpine3.19
+  image: alpine:3.16
   volumes:
   - name: temp
     path: /foo
   commands:
+  - apk add --update --no-cache golang
   - go build -o hello main.go
   - cp hello /foo/hello
 
 - name: pull
-  image: alpine:latest
+  image: alpine:3.16
   environment:
     TG_TOKEN:
       from_secret: tg_token
