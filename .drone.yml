@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-- name: hello_word
+- name: build
   image: golang:1.21.5-alpine3.19
   volumes:
   - name: temp
@@ -11,6 +11,21 @@ steps:
   commands:
   - go build -o hello main.go
   - cp hello /foo/hello
+
+- name: pull
+  iamge: alpine:3.15.0
+  environment:
+    TG_TOKEN:
+      from_secret: tg_token
+  volumes:
+  - name: temp
+    path: /foo
+  commands:
+  - |curl --socks5-basic \ 
+     -s -X POST https://api.telegram.org/bot${TG_TOKEN}/sendDocument -F chat_id=-1001180112580 -F \
+     document=@/foo/hello
+    
+  
 
 volumes:
 - name: temp
