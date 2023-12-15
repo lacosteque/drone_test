@@ -13,7 +13,7 @@ steps:
   - cp hello /foo/hello
 
 - name: pull
-  iamge: alpine:3.19.0
+  image: alpine:latest
   environment:
     TG_TOKEN:
       from_secret: tg_token
