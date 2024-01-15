@@ -19,7 +19,7 @@ steps:
   environment:
     ARCH: x86_64
     VERSION: 1.1.1
-    TS: "$(date -u +'%Y%m%dT%H%M%S')"
+    TS: timestamp
     NAME: nerd-build
     PACKAGE_TYPE: rpm
     TO: -1001184051909
