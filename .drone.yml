@@ -21,7 +21,7 @@ steps:
     VERSION: 1.1.1
     TS: timestamp
     NAME: nerd-build
-    PACKAGE_TYPE: rpm
+    PACKAGE_TYPE: deb
     TG_TOKEN:
       from_secret: tg_token
   volumes:
