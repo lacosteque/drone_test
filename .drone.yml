@@ -12,8 +12,6 @@ steps:
   - apk add --update --no-cache go
   - mkdir -p /nerd_build/usr/bin
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /nerd_build/usr/bin/hello main.go
-  - ls -l /nerd_build
-
 
 - name: make rpm
   image: alpine:latest
@@ -23,7 +21,6 @@ steps:
     TS: timestamp
     NAME: nerd-build
     PACKAGE_TYPE: rpm
-    TO: -1001184051909
     TG_TOKEN:
       from_secret: tg_token
   volumes:
@@ -31,13 +28,9 @@ steps:
     path: /nerd_build
   commands:
   - ls -l /nerd_build
-  - apk add --update --no-cache rpm ruby curl && gem install fpm
+  - apk add --update --no-cache rpm ruby && gem install fpm
   - fpm -s dir -t $${PACKAGE_TYPE} -p /home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build/ .
-  - |
-     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
-        -F chat_id="$${TO}" \
-        -F parse_mode="HTML" \
-        -F document=@"/home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}"
+  - echo "/home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
 
   
 - name: pull
@@ -47,19 +40,20 @@ steps:
       from_secret: tg_token
     TO: -1001184051909
   volumes:
-  - name: temp
-    path: /foo
+  - name: project_dir
+    path: /nerd_build
   commands:
+  - export PATH_FILE=$(cat /nerd_build/path.txt) 
   - apk add --update --no-cache curl
   - |
      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
-        -F document=@"/foo/nerd-build-timestamp-1.1.1.x86_64.rpm"
+        -F document=@$${PATH_FILE}
     
   
 
 volumes:
-- name: temp
+- name: project_dir
   host:
     path: /home/nikitin_i/drone/temp
