@@ -29,7 +29,7 @@ steps:
   commands:
   - apk add --update --no-cache rpm ruby && gem install fpm
   - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build/ .
-  - echo "/home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
+  - echo "/nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
 
   
 - name: pull
