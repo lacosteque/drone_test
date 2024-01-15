@@ -18,7 +18,7 @@ steps:
   environment:
     TG_TOKEN:
       from_secret: tg_token
-    TO: -1001180112580
+    TO: -1001184051909
   volumes:
   - name: temp
     path: /foo
