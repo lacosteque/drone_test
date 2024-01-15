@@ -19,11 +19,12 @@ steps:
   - name: temp
     path: /foo
   commands:
-  - dnf -y update
+  #- dnf -y update
   - dnf install  -y https://github.com/genereese/togo/releases/download/v3.0r5/togo-3.0-5.noarch.rpm python-pip
   - pip install SQLObject
   - cd ~
-  - togo project create nerd-build && cd nerd-build && mkdir -p root/usr/local/bin && cp /foo/hello root/usr/local/bin/
+  - togo project create nerd-build 
+  - sed -i 's/BuildArch: noarch/BuildArch: x86_64/' "nerd-build/spec/headers" && cd nerd-build && mkdir -p root/usr/local/bin && cp /foo/hello root/usr/local/bin/
   - togo build package
   
 - name: pull
