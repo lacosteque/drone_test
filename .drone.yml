@@ -14,17 +14,27 @@ steps:
   - cp hello /foo/hello
 
 - name: make rpm
-  image: fedora:latest
+  image: oraclelinux:9-slim
   volumes:
   - name: temp
     path: /foo
   commands:
-  - dnf -y update
-  - dnf install  -y https://github.com/genereese/togo/releases/download/v3.0r5/togo-3.0-5.noarch.rpm python-pip
-  - pip install SQLObject
-  - cd ~
-  - togo project create nerd-build && sed -i 's/BuildArch: noarch/BuildArch: x86_64/' nerd-build/spec/headers && cd nerd-build && mkdir -p root/usr/local/bin && cp /foo/hello root/usr/local/bin/
-  - togo build package
+  - microdnf -y update \
+    && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all  
+  - gem install fpm
+  - mkdir -p /home/nerd-build/usr/bin && cp /home/nerd-build/usr/bin
+  - | fpm \
+      -s dir -t deb \
+      -p nerd-build-1488-1.1.1.x86_64.rpm \
+      --name nerd-build \
+      --license agpl3 \
+      --version 1.1.1 \
+      --architecture x86_64 \
+      --description "Say hi!" \
+      --url "https://example.com/hello-world" \
+      --maintainer "You The Amazing Person <you are an amazing person at example dot com>" \
+      -C /home/nerd-build/usr/bin .
+  - cp nerd-build-1488-1.1.1.x86_64.rpm /foo
   
 - name: pull
   image: alpine:3.15
@@ -41,7 +51,7 @@ steps:
      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
-        -F document=@"/foo/hello"
+        -F document=@"/foo/nerd-build-1488-1.1.1.x86_64.rpm"
     
   
 
