@@ -10,7 +10,7 @@ steps:
     path: /foo
   commands:
   - apk add --update --no-cache go
-  - go build -o hello main.go
+  - env CGO_ENABLED=0 go build -o hello main.go
   - cp hello /foo/hello
 
 - name: make rpm
