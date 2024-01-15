@@ -9,6 +9,7 @@ steps:
   - name: project_dir
     path: /nerd_build
   commands:
+  - rm -r /nerd_build/*
   - apk add --update --no-cache go
   - mkdir -p /nerd_build/usr/bin
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /nerd_build/usr/bin/hello main.go
