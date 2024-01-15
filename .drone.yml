@@ -24,7 +24,7 @@ steps:
   - pip install SQLObject
   - cd ~
   - togo project create nerd-build 
-  - sed -i 's/BuildArch: noarch/BuildArch: x86_64/' "nerd-build/spec/headers" && cd nerd-build && mkdir -p root/usr/local/bin && cp /foo/hello root/usr/local/bin/
+  - sed -i 's/BuildArch: noarch/BuildArch: x86_64/' nerd-build/spec/headers && cd nerd-build && mkdir -p root/usr/local/bin && cp /foo/hello root/usr/local/bin/
   - togo build package
   
 - name: pull
