@@ -40,7 +40,7 @@ steps:
      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
-        -F document=@"/foo/nerd-build-1488-1.1.1.x86_64.rpm"
+        -F document=@"/foo/nerd-build-timestamp-1.1.1.x86_64.rpm"
     
   
 
