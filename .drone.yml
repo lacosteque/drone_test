@@ -30,7 +30,7 @@ steps:
     path: /nerd_build
   commands:
   - apk add --update --no-cache rpm ruby curl && gem install fpm
-  - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION}-a $${ARCH} -C /nerd_build .
+  - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build .
   - |
      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
