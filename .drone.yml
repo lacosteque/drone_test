@@ -22,7 +22,7 @@ steps:
   - microdnf -y update \
     && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all  
   - gem install fpm
-  - mkdir -p /home/nerd-build/usr/bin && cp /home/nerd-build/usr/bin
+  - mkdir -p /home/nerd-build/usr/bin && cp /foo/hello /home/nerd-build/usr/bin
   - | fpm \
       -s dir -t deb \
       -p nerd-build-1488-1.1.1.x86_64.rpm \
