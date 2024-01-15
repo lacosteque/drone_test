@@ -9,7 +9,7 @@ steps:
   - name: temp
     path: /foo
   commands:
-  - env CGO_ENABLED=0 go build -o hello main.go
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o hello main.go
   - cp hello /foo/hello
 
 - name: make rpm
@@ -19,9 +19,8 @@ steps:
     path: /foo
   commands:
   - microdnf -y update && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all && gem install fpm
-  - mkdir -p /home/nerd-build/usr/bin
-  - cp /foo/hello /home/nerd-build/usr/bin
-  - fpm -s dir -t deb -p nerd-build-1488-1.1.1.x86_64.rpm --name nerd-build --version 1.1.1 --architecture x86_64 -C /home/nerd-build/usr/bin .
+  - mkdir -p /home/nerd-build/usr/bin && cp /foo/hello /home/nerd-build/usr/bin
+  - fpm -s dir -t rpm -p nerd-build-timestamp-1.1.1.x86_64.rpm -n nerd-build -v 1.1.1 -a x86_64 -C /home/nerd-build/usr/bin .
   - cp nerd-build-1488-1.1.1.x86_64.rpm /foo
 
 
