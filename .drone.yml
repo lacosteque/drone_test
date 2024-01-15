@@ -12,6 +12,7 @@ steps:
   - apk add --update --no-cache go
   - mkdir -p /nerd_build/usr/bin
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /nerd_build/usr/bin/hello main.go
+  - ls -l /nerd_build
 
 
 - name: make rpm
@@ -29,8 +30,9 @@ steps:
   - name: project_dir
     path: /nerd_build
   commands:
+  - ls -l /nerd_build
   - apk add --update --no-cache rpm ruby curl && gem install fpm
-  - fpm -s dir -t $${PACKAGE_TYPE} -p /home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build .
+  - fpm -s dir -t $${PACKAGE_TYPE} -p /home/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build/ .
   - |
      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
