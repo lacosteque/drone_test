@@ -4,12 +4,12 @@ name: default
 
 steps:
 - name: build
-  image: alpine:3.15
+  image: alpine:latest
   volumes:
   - name: temp
     path: /foo
   commands:
-  - apk add --update --no-cache go=1.17
+  - apk add --update --no-cache go
   - go build -o hello main.go
   - cp hello /foo/hello
 
