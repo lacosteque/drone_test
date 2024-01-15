@@ -4,25 +4,38 @@ name: default
 
 steps:
 - name: build
-  image: golang:1.22-rc-alpine
+  image: alpine:latest
   volumes:
-  - name: temp
-    path: /foo
+  - name: project_dir
+    path: /nerd_build
   commands:
-  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o hello main.go
-  - cp hello /foo/hello
+  - apk add --update --no-cache go
+  - mkdir -p /nerd_build/usr/bin
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /nerd_build/usr/bin/hello main.go
+
 
 - name: make rpm
-  image: oraclelinux:9-slim
+  image: alpine:latest
+  environment:
+    ARCH: x86_64
+    VERSION: 1.1.1
+    TS: "$(date -u +'%Y%m%dT%H%M%S')"
+    NAME: nerd-build
+    PACKAGE_TYPE: rpm
+    TO: -1001184051909
+    TG_TOKEN:
+      from_secret: tg_token
   volumes:
-  - name: temp
-    path: /foo
+  - name: project_dir
+    path: /nerd_build
   commands:
-  - microdnf -y update && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all && gem install fpm
-  - mkdir -p /home/nerd-build/usr/bin && cp /foo/hello /home/nerd-build/usr/bin
-  - fpm -s dir -t rpm -p nerd-build-timestamp-1.1.1.x86_64.rpm -n nerd-build -v 1.1.1 -a x86_64 -C /home/nerd-build/usr/bin .
-  - cp nerd-build-timestamp-1.1.1.x86_64.rpm /foo
-
+  - apk add --update --no-cache rpm ruby curl && gem install fpm
+  - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION}-a $${ARCH} -C /nerd_build .
+  - |
+     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
+        -F chat_id="$${TO}" \
+        -F parse_mode="HTML" \
+        -F document=@"/nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}"
 
   
 - name: pull
