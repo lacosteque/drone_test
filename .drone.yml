@@ -28,7 +28,7 @@ steps:
   - name: project_dir
     path: /nerd_build
   commands:
-  - apk add --update --no-cache rpm tar ruby && gem install fpm
+  - apk add --update --no-cache rpm ruby binutils tar&& gem install fpm
   - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build/ .
   - echo "/nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
 
