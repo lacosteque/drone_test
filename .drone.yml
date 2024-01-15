@@ -4,12 +4,11 @@ name: default
 
 steps:
 - name: build
-  image: alpine:latest
+  image: golang:1.22-rc-alpine
   volumes:
   - name: temp
     path: /foo
   commands:
-  - apk add --update --no-cache go
   - env CGO_ENABLED=0 go build -o hello main.go
   - cp hello /foo/hello
 
@@ -22,6 +21,17 @@ steps:
   - microdnf -y update && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all && gem install fpm
   - mkdir -p /home/nerd-build/usr/bin
   - cp /foo/hello /home/nerd-build/usr/bin
+  - | fpm \
+      -s dir -t deb \
+      -p nerd-build-1488-1.1.1.x86_64.rpm \
+      --name nerd-build \
+      --license agpl3 \
+      --version 1.1.1 \
+      --architecture x86_64 \
+      --description "Say hi!" \
+      --url "https://example.com/hello-world" \
+      --maintainer "You The Amazing Person <you are an amazing person at example dot com>" \
+      -C /home/nerd-build/usr/bin .
 
   
 - name: pull
