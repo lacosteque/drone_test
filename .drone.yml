@@ -14,13 +14,14 @@ steps:
   - cp hello /foo/hello
 
 - name: make rpm
-  image: localhost/oraclelinux:9-slim
+  image: oraclelinux:9-slim
   volumes:
   - name: temp
     path: /foo
   commands:
   - microdnf -y update && microdnf -y install rpm-build squashfs-tools ruby && microdnf -y clean all && gem install fpm
   - mkdir -p /home/nerd-build/usr/bin
+  - cp /foo/hello /home/nerd-build/usr/bin
 
   
 - name: pull
