@@ -12,8 +12,8 @@ steps:
 - name: make structure
   image: alpine:3.15
   volumes:
-  - name: builder_dir
-    path: $${ROOT_DIR}
+  - name: test
+    path:  ~
   commands:
   - |
     mkdir -p "~/$${HOME_DIR}/src/usr/bin/" \
@@ -25,11 +25,12 @@ steps:
 - name: micro install
   image: alpine:3.15
   volumes:
-  - name: builder_dir
-    path: ~
+  - name: test
+    path:  ~
   commands:
   - apk add --update --no-cache micro
   - mv $(which micro) "~/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - ls - ~
   depends_on:
   - make structure
 
@@ -38,7 +39,7 @@ volumes:
   host:
     path: $${ROOT_DIR}
 
-- name: configs
+- name: test
   temp: {}
 
 - name: docker-socket
