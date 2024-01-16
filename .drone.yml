@@ -116,7 +116,7 @@ steps:
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
-        -t "$${OUTPUT_TYP}" \
+        -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
