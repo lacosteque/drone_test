@@ -29,7 +29,8 @@ steps:
     path: /nerd_build
   commands:
   - apk add --update --no-cache ruby && gem install fpm
-  - | if [ "$PACKAGE_TYPE" = "rpm" ]; then \
+  - | 
+    if [ "$PACKAGE_TYPE" = "rpm" ]; then \
           echo "Building RPM package"; \
           apk add --no-cache rpm \
     elif [ "$PACKAGE_TYPE" = "deb" ]; then \
