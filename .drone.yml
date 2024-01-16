@@ -4,6 +4,7 @@ name: default
 
 
 environment:
+  SRC_DIR: "/nerd_builder/src"
   BIN_DIR: "/nerd_builder/src/usr/bin"
   SHARE_DIR: "/nerd_builder/src/usr/share"
   TEMP_DIR: "/nerd_builder/temp"
@@ -87,6 +88,39 @@ steps:
   - ls -l "$${BIN_DIR}"
   depends_on:
   - fetch loki docker driver
+
+- name: make pkg
+  image: alpine:3.15
+  environment:
+    TZ: Europe/Moscow
+    ARCH: x86_64
+    RELEASE: 1.1.1
+    NAME: nerd-build
+    PKG: rpm
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  commands:
+  - apk add --no-cache ruby tzdata && gem install fpm
+  - |
+    if [ "$${PKG}" = "rpm" ]; then \
+        apk add --no-cache rpm; \
+    elif [ "$${PKG}" = "deb" ]; then \
+        apk add --no-cache binutils tar; \
+    fi
+  - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
+  - export PATH_FILE="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
+  - | 
+    fpm -s dir -t $${src} \
+        -p "$${PATH_FILE}" \
+        -n "$${NAME}" \
+        -v "$${RELEASE}" \
+        -a "$${ARCH}" \
+        -C "$${SRC_DIR}" .
+  - echo "$${PATH_FILE}" > "$${TEMP_DIR}/pkg_path.txt"
+  - cat "$${TEMP_DIR}/pkg_path.txt"
+  depends_on:
+  - build nerd
 
 volumes:
 - name: builder
