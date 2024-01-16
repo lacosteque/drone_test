@@ -18,18 +18,32 @@ steps:
   image: alpine:latest
   environment:
     ARCH: x86_64
-    VERSION: 1.1.1
-    TS: timestamp
+    RELEASE: 1.1.1
+    VERSION: timestamp
     NAME: nerd-build
-    PACKAGE_TYPE: deb
+    PACKAGE_TYPE: rpm
     TG_TOKEN:
       from_secret: tg_token
   volumes:
   - name: project_dir
     path: /nerd_build
   commands:
-  - apk add --update --no-cache rpm ruby binutils tar&& gem install fpm
-  - fpm -s dir -t $${PACKAGE_TYPE} -p /nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE} -n $${NAME} -v $${VERSION} -a $${ARCH} -C /nerd_build/ .
+  - apk add --update --no-cache ruby && gem install fpm
+  - if [ "$PACKAGE_TYPE" = "rpm" ]; then
+          echo "Building RPM package";
+          apk add --no-cache rpm
+        else
+          echo "Building DEB package";
+          apk add --no-cache binutils tar
+        fi
+  - | 
+    fpm -s dir -t $${PACKAGE_TYPE} \
+        -p /nerd_build/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE} \
+        -n $${NAME} \
+        -v $${RELEASE} \
+        -a $${ARCH} \
+        -C /nerd_build/ .
+        
   - echo "/nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
 
   
