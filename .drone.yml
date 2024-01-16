@@ -85,7 +85,7 @@ steps:
   commands:
   - apk add --update --no-cache go
   - go build -o "$${BIN_DIR}/nerd" main.go
-  - ls -l "$${BIN_DIR}"
+  - export XXX="ZZZ"
   depends_on:
   - fetch loki docker driver
 
@@ -97,6 +97,7 @@ steps:
     RELEASE: 1.1.1
     NAME: nerd-build
     PKG: rpm
+    LICENSE: GNU GPL
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -108,17 +109,19 @@ steps:
     elif [ "$${PKG}" = "deb" ]; then \
         apk add --no-cache binutils tar; \
     fi
-  - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
+  - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
-    fpm -s dir -t "$${SRC_DIR}" \
+    fpm -s dir -t "$${PKG}" \
         -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
+        -l "$${LICENSE}" \
         -C "$${SRC_DIR}" .
   - echo "$${PATH_FILE}" > "$${TEMP_DIR}/pkg_path.txt"
   - cat "$${TEMP_DIR}/pkg_path.txt"
+  - echo $${XXX}
   depends_on:
   - build nerd
 
