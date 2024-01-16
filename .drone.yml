@@ -111,6 +111,7 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')-$${RELEASE}"
+  - echo "$${VERSION}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
