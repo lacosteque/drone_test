@@ -50,7 +50,10 @@ steps:
         cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
         rm -f "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
         cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
-        tar -czf "/tmp/$${HOME_DIR}/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/" "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
+        tar -czf "/tmp/$${HOME_DIR}/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \
+            -C "/tmp/${HOME_DIR}/${TEMP}"\
+            rootfs \
+            config.json
       else
         echo "Loki Logging Driver not found."
       fi
@@ -69,7 +72,7 @@ steps:
   - prepared loki
 
 
-- name: make src
+- name: make pkg
   image: alpine:latest
   environment:
     TZ: Europe/Moscow
