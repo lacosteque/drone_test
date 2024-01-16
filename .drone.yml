@@ -99,6 +99,7 @@ steps:
     PKG: rpm
     LICENSE: GNU GPL
     LOG: debug
+    INPUT_TYPE: dir
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -113,14 +114,16 @@ steps:
   - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
-    fpm -s dir -t "$${PKG}" \
+    fpm -s "$${INPUT_TYPE}" \
+        -t "$${PKG}" \
         -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
         --license "$${LICENSE}" \
         --log "$${LOG}" \
-        --description "Средство для автоматизированного обновления Docker-контейнеров 🤓"
+        --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
+        --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
   - echo "$${PATH_FILE}" > "$${TEMP_DIR}/pkg_path.txt"
   - cat "$${TEMP_DIR}/pkg_path.txt"
