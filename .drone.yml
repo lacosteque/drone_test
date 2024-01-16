@@ -3,8 +3,7 @@ type: docker
 name: default
 
 environment:
-  ROOT_DIR: "/tmp/"
-  HOME_DIR: nerd_builder
+  BUILDER: "/nerd_builder/"
   TEMP: temp
 
 steps:
@@ -12,26 +11,26 @@ steps:
 - name: make structure
   image: alpine:3.15
   volumes:
-  - name: test
-    path:  /tmp/
+  - name: builder
+    path:  $${BUILDER}
   commands:
   - |
-    mkdir -p "/tmp/$${HOME_DIR}/src/usr/bin/" \
-             "/tmp/$${HOME_DIR}/src/usr/share/" \
-             "/tmp/$${HOME_DIR}/$${TEMP}" \
-             "/tmp/$${HOME_DIR}/output"
+    mkdir -p "/$${BUILDER}/src/usr/bin/" \
+             "$${BUILDER}/src/usr/share/" \
+             "$${BUILDER}/$${TEMP}" \
+             "$${BUILDER}/output"
 
         
 - name: micro install
   image: alpine:3.15
   volumes:
-  - name: test
-    path:  /tmp/
+  - name: builder
+    path:  $${BUILDER}
   commands:
   - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
   #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - mv ./micro "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - mv ./micro "$${BUILDER}/src/usr/bin/nerdmicro"
   depends_on:
   - make structure
 
@@ -40,7 +39,7 @@ volumes:
   host:
     path: /root/
 
-- name: test
+- name: builder
   temp: {}
 
 - name: docker-socket
