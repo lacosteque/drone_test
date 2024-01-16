@@ -127,6 +127,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
+  - ls -l "$${TEMP_DIR}"
   depends_on:
   - build nerd
 
@@ -140,10 +141,10 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
+  - ls -l "$${TEMP_DIR}"
   - apk add --no-cache curl
   - curl -O https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  - PACKAGE_PATH=$(cat "$${PKG_PATH}") 
-  - sh ./supload.sh -u 47066_temp -k "$${PASS}" temp "$${PACKAGE_PATH}"
+  - sh ./supload.sh -u 47066_temp -k "$${PASS}" temp $(cat "$${PKG_PATH}")
   depends_on:
   - make pkg
 
