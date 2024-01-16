@@ -8,13 +8,11 @@ environment:
 
 steps:
 
-- name: prepare
+- name: make structure
   image: alpine:latest
   volumes:
-  - name: temp
+  - name: builder_dir
     path: ~
-  - name: configs
-    path: /drone/configs
   commands:
   - |
     mkdir -p "~/$${HOME_DIR}/src/usr/bin/" \
@@ -31,6 +29,8 @@ steps:
   commands:
   - apk add --update --no-cache micro
   - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  depends_on:
+  - prepared loki
 
 - name: prepared loki
   image: alpine:latest
@@ -69,6 +69,8 @@ steps:
       else
         echo "Loki Logging Driver not found."
       fi
+  depends_on:
+  - micro install
 
       
 - name: build bin
@@ -143,7 +145,7 @@ steps:
   
 
 volumes:
-- name: temp
+- name: builder_dir
   host:
     path: /tmp
 
