@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-- name: build
+- name: build bin
   image: alpine:latest
   volumes:
   - name: project_dir
@@ -14,7 +14,7 @@ steps:
   - mkdir -p /nerd_build/usr/bin
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /nerd_build/usr/bin/hello main.go
 
-- name: make rpm
+- name: make pkg
   image: alpine:latest
   environment:
     ARCH: x86_64
@@ -46,6 +46,8 @@ steps:
         -C /nerd_build/ .
         
   - echo "/nerd_build/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /nerd_build/path.txt
+  depends_on:
+  - build bin
 
   
 - name: pull
@@ -65,6 +67,9 @@ steps:
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
         -F document=@$${PATH_FILE}
+  depends_on:
+  - make pkg
+        
     
   
 
