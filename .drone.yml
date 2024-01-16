@@ -2,13 +2,16 @@ kind: pipeline
 type: docker
 name: default
 
+
 environment:
   BIN_DIR: "/nerd_builder/src/usr/bin/"
   SHARE_DIR: "/nerd_builder/src/usr/share/"
   TEMP_DIR: "/nerd_builder/temp"
   OUTPUT_DIR: "/nerd_builder/output"
 
+
 steps:
+
 - name: make structure
   image: alpine:latest
   volumes:
@@ -30,6 +33,47 @@ steps:
   - ls -l /nerd_builder/
   depends_on:
   - make structure
+
+- name: fetch loki docker driver 
+  image: alpine:3.15
+  environment:
+    VERSION: 2.7.0
+    DOCKER_VERSION: 17.09.0-ce
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  - name: docker-socket
+    path: /var/run/docker.sock
+  - name: docker-plugins
+    path: /var/lib/docker/plugins/
+  privileged: true
+  commands:
+  - apk add --update --no-cache docker=$${DOCKER_VERSION} jq
+  - | 
+    if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
+      echo "Plugin already exists"
+    else
+      docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+    fi
+    
+  - | 
+    loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
+      if [ -n "$loki_id" ]; then
+        inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
+        loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
+
+        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
+        rm -f "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
+        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
+        tar -czf "/tmp/$${HOME_DIR}/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \
+            -C "/tmp/$${HOME_DIR}/$${TEMP}"\
+            rootfs \
+            config.json
+      else
+        echo "Loki Logging Driver not found."
+      fi
+  depends_on:
+  - micro install
 
 
 volumes:
