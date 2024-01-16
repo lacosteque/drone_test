@@ -19,7 +19,7 @@ steps:
       #path: /var/run/docker.sock
   #privileged: true
   commands:
-  - docker start
+  - service docker start
   - docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
 
 - name: build bin
