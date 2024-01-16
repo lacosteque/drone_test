@@ -19,14 +19,13 @@ steps:
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/usr/bin/hello" main.go
 
 - name: prepared loki
-  image: alpine:latest
+  image: docker/cli:latest
   environment:
     VERSION: 2.7.0
   volumes:
   - name: temp
     path: /tmp
   commands:
-  - apk add --no-cache docker
   - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
 
 
