@@ -7,8 +7,9 @@ environment:
   SRC_DIR: "/nerd_builder/src"
   BIN_DIR: "/nerd_builder/src/usr/bin"
   SHARE_DIR: "/nerd_builder/src/usr/share"
-  TEMP_DIR: "/nerd_builder/temp"
   OUTPUT_DIR: "/nerd_builder/output"
+  TEMP_DIR: "/nerd_builder/temp"
+  PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
 
 
 steps:
@@ -85,7 +86,6 @@ steps:
   commands:
   - apk add --update --no-cache go
   - go build -o "$${BIN_DIR}/nerd" main.go
-  - export XXX="ZZZ"
   depends_on:
   - fetch loki docker driver
 
@@ -93,13 +93,13 @@ steps:
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
+    NAME: nerd-build
     ARCH: x86_64
     RELEASE: 1.1.1
-    NAME: nerd-build
-    PKG: rpm
-    LICENSE: GNU GPL
-    LOG: debug
+    OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
+    LICENSE: GNU GPL
+    LOG: info
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -112,11 +112,12 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  - export PATH_FILE="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
+  - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
+    #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
-        -t "$${PKG}" \
-        -p "$${PATH_FILE}" \
+        -t "$${OUTPUT_TYP}" \
+        -p "$${PACKAGE_PATH}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
@@ -125,11 +126,26 @@ steps:
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
-  - echo "$${PATH_FILE}" > "$${TEMP_DIR}/pkg_path.txt"
-  - cat "$${TEMP_DIR}/pkg_path.txt"
-  - echo "$${XXX}"
+  - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   depends_on:
   - build nerd
+
+
+- name: push storage
+  image: alpine:3.15
+  environment:
+    URL: http://10.250.26.8:9000
+    PASS:
+      from_secret: pass
+    TO: -1001184051909
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  commands:
+  - apk add --no-cache curl
+  - curl -O https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
+  - PACKAGE_PATH=$(cat "$${PKG_PATH}") 
+  - sh ./supload.sh -u 47066_temp -k "$${PASS}" temp "$${PACKAGE_PATH}"
 
 volumes:
 - name: builder
