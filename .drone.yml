@@ -26,6 +26,7 @@ steps:
   - name: temp
     path: /tmp
   commands:
+  - apk add --no-cache docker
   - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
 
 
