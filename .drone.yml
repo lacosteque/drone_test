@@ -143,11 +143,9 @@ steps:
   commands:
   - ls -l "$${TEMP_DIR}"
   - apk add --no-cache curl bash
-  - curl -O https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  - mv supload.sh /usr/local/bin/supload
-  - chmod +x /usr/local/bin/supload
+  - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - FILE=$(cat "$${PKG_PATH}")
-  - supload -u 47066_temp -k "$${PASS}" temp $${"FILE}
+  - bash supload.sh -u 47066_temp -k "$${PASS}" temp $${"FILE}
   depends_on:
   - make pkg
 
