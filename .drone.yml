@@ -25,6 +25,7 @@ steps:
   volumes:
   - name: temp
     path: /tmp
+  privileged: true
   commands:
   - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
 
