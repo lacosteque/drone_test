@@ -27,7 +27,7 @@ steps:
     path: /tmp
   commands:
   - apk add --update --no-cache micro
-  - mv $(which sstpc) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
 
 - name: prepared loki
   image: alpine:latest
