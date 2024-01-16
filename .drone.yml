@@ -13,24 +13,24 @@ steps:
   image: alpine:3.15
   volumes:
   - name: test
-    path:  ~
+    path:  /tmp/
   commands:
   - |
-    mkdir -p "~/$${HOME_DIR}/src/usr/bin/" \
-             "~/$${HOME_DIR}/src/usr/share/" \
-             "~/$${HOME_DIR}/$${TEMP}" \
-             "~/$${HOME_DIR}/output"
+    mkdir -p "/tmp/$${HOME_DIR}/src/usr/bin/" \
+             "/tmp/$${HOME_DIR}/src/usr/share/" \
+             "/tmp/$${HOME_DIR}/$${TEMP}" \
+             "/tmp/$${HOME_DIR}/output"
 
         
 - name: micro install
   image: alpine:3.15
   volumes:
   - name: test
-    path:  ~
+    path:  /tmp/
   commands:
   - apk add --update --no-cache micro
-  - mv $(which micro) "~/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - ls - ~
+  - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - ls - /tmp/
   depends_on:
   - make structure
 
