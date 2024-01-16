@@ -29,7 +29,6 @@ steps:
   - name: temp
     path: /tmp
   commands:
-  - echo $${TZ} > /etc/timezone
   - VERSION=$(date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - apk add --update --no-cache ruby && gem install fpm
