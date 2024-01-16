@@ -5,7 +5,6 @@ name: default
 environment:
   HOME_DIR: nerd_build
 
-
 steps:
 - name: check timezone
   image: alpine:latest
