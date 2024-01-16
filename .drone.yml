@@ -15,8 +15,8 @@ steps:
     path: /tmp
   commands:
   - |
-    mkdir -p "/tmp/${HOME_DIR}/pkg/usr/{bin,share}" \
-             "/tmp/${HOME_DIR}/$${TEMP}"
+    mkdir -p "/tmp/$${HOME_DIR}/pkg/usr/"{bin,share} \
+             "/tmp/$${HOME_DIR}/$${TEMP}"
 
 - name: prepared loki
   image: alpine:latest
