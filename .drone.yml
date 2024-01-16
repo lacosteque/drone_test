@@ -9,6 +9,8 @@ environment:
 steps:
 - name: check timezone
   image: alpine:latest
+  environment:
+    TZ: Europe/Moscow
   commands:
   - echo $(date +'%Z (%z)')
 
