@@ -31,6 +31,8 @@ steps:
   - apk add --update --no-cache go
   - mkdir -p "/tmp/$${HOME_DIR}/usr/bin"
   - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/usr/bin/hello" main.go
+  depends_on:
+  - prepared loki
 
 
 - name: make pkg
