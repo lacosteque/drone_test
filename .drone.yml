@@ -24,11 +24,11 @@ steps:
 - name: micro install
   image: alpine:latest
   volumes:
-  - name: temp
-    path: /tmp
+  - name: builder_dir
+    path: ~
   commands:
   - apk add --update --no-cache micro
-  - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - mv $(which micro) "~/$${HOME_DIR}/src/usr/bin/nerdmicro"
   depends_on:
   - make structure
 
