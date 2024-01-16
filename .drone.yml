@@ -21,6 +21,8 @@ steps:
   commands:
   - apk add --update --no-cache docker jq
   #- docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+
+  - ls -l /var/lib/docker/plugins/
   - | 
     loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$loki_id" ]; then
