@@ -75,7 +75,7 @@ steps:
 - name: build nerd b
   image: alpine:latest
   environment:
-    VERSION: 1.19
+    VERSION: 1.19.9-r0
     GOOS: linux
     GOARCH: amd64
     CGO_ENABLED: 0
