@@ -4,6 +4,7 @@ name: default
 
 environment:
   HOME_DIR: nerd_build
+  TEMP: temp
 
 steps:
 
@@ -15,7 +16,7 @@ steps:
   commands:
   - |
     mkdir -p "/tmp/${HOME_DIR}/pkg/usr/{bin,share}" \
-             "/tmp/${HOME_DIR}/tmp"
+             "/tmp/${HOME_DIR}/$${TEMP}"
 
 - name: prepared loki
   image: alpine:latest
@@ -44,12 +45,12 @@ steps:
         inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
         loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
 
-        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/${HOME_DIR}/tmp"
-        rm -i "/tmp/${HOME_DIR}/tmp/rootfs/var/run"
-        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/${HOME_DIR}/tmp/config.json"
+        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
+        rm -i "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
+        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/${HOME_DIR}/$${TEMP}/config.json"
         tar -czf "/tmp/${HOME_DIR}/pkg/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \ 
-                 "/tmp/${HOME_DIR}/tmp/rootfs" \
-                 "/tmp/${HOME_DIR}/tmp/config.json"
+                 "/tmp/${HOME_DIR}/$${TEMP}/rootfs" \
+                 "/tmp/${HOME_DIR}/$${TEMP}/config.json"
       else
         echo "Loki Logging Driver not found."
       fi
@@ -96,7 +97,7 @@ steps:
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
-        -C "/tmp/$${HOME_DIR}" .
+        -C "/tmp/$${HOME_DIR}/pkg/" .
   - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/tmp/path.txt"
   depends_on:
   - build bin
