@@ -22,7 +22,8 @@ steps:
   - apk add --update --no-cache docker jq
   - service docker start
   - docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-  - | loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
+  - | 
+    loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$loki_id" ]; then
       # Запустить команду docker plugin inspect с полученным ID
         inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
