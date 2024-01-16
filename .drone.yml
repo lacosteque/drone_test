@@ -3,6 +3,7 @@ type: docker
 name: default
 
 environment:
+  ROOT_DIR: "/tmp/"
   HOME_DIR: nerd_builder
   TEMP: temp
 
@@ -12,7 +13,7 @@ steps:
   image: alpine:3.15
   volumes:
   - name: builder_dir
-    path: /tmp/
+    path: $${ROOT_DIR}
   commands:
   - |
     mkdir -p "~/$${HOME_DIR}/src/usr/bin/" \
@@ -35,7 +36,7 @@ steps:
 volumes:
 - name: builder_dir
   host:
-    path: /tmp/
+    path: $${ROOT_DIR}
 
 - name: configs
   temp: {}
