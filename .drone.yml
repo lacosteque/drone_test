@@ -30,7 +30,8 @@ steps:
   - name: temp
     path: /tmp
   commands:
-  - VERSION=$(date +'%Y%m%dT%H%M%S')
+  - export TZ="Europe/Moscow"
+  - VERSION=$(date +'%Y%m%dT%H%M%S%z')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
