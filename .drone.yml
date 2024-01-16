@@ -16,11 +16,7 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - |
-    mkdir -p "$${BIN_DIR}" \
-             "$${SHARE_DIR}" \
-             "$${TEMP_DIR}" \
-             "$${OUTPUT_DIR}"
+  
 
         
 - name: micro install
