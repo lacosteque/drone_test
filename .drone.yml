@@ -29,10 +29,9 @@ steps:
   - name: temp
     path: /tmp
   commands:
-  - x=$(date -d @$${DRONE_BUILD_STARTED})
-  - echo $x
+  - VERSION=$(date -d @$${DRONE_BUILD_STARTED})
   - apk add --update --no-cache tzdata && cp /usr/share/zoneinfo/$${TZ} /etc/localtime
-  - VERSION=$(date +'%Y%m%dT%H%M%S')
+  - VERSION1=$(date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - apk add --no-cache ruby && gem install fpm
   - |
