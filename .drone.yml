@@ -28,7 +28,7 @@ steps:
   - name: test
     path:  /tmp/
   commands:
-  #- apk add --update --no-cache curl
+  - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
   - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
   - ls -l /tmp/
