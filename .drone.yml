@@ -15,7 +15,8 @@ steps:
     path: /tmp
   commands:
   - |
-    mkdir -p "/tmp/$${HOME_DIR}/pkg/usr/"{bin,share} \
+    mkdir -p "/tmp/$${HOME_DIR}/pkg/usr/bin/" \
+             "/tmp/$${HOME_DIR}/pkg/usr/share/" \
              "/tmp/$${HOME_DIR}/$${TEMP}"
 
 - name: prepared loki
