@@ -72,8 +72,8 @@ steps:
   depends_on:
   - micro install
 
-- name: build nerd b
-  image: alpine:latest
+- name: build nerd
+  image: alpine:3.15
   environment:
     VERSION: 1.19.9-r0
     GOOS: linux
@@ -83,7 +83,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - apk add --update --no-cache go@$${VERSION}
+  - apk add --update --no-cache go=$${VERSION}
   - go build -o "$${BIN_DIR}/nerd" main.go
   - ls -l "$${BIN_DIR}"
   depends_on:
