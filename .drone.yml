@@ -11,6 +11,7 @@ steps:
   environment:
     TZ: Europe/Moscow
   commands:
+  - apk add --no-cache tzdata && cp /usr/share/zoneinfo/$${TZ} /etc/localtime
   - echo $(date +'%Z (%z)')
 
 - name: build bin
