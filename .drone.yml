@@ -14,9 +14,10 @@ steps:
   volumes:
   - name: temp
     path: /tmp
-  volumes:
-    - name: docker-socket
-      path: /var/run/docker.sock
+  - name: docker-socket
+    path: /var/run/docker.sock
+  - name: docker-plugins
+    path: /var/lib/docker/plugins/
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -123,3 +124,7 @@ volumes:
 - name: docker-socket
   host:
     path: /var/run/docker.sock
+
+- name: docker-plugins
+  host:
+    path: /var/lib/docker/plugins/
