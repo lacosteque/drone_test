@@ -35,7 +35,7 @@ steps:
 volumes:
 - name: builder_dir
   host:
-    path: /tmp
+    path: ~
 
 - name: configs
   temp: {}
