@@ -9,7 +9,7 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
 
 steps:
-- name: clone
+- name: clonez
   image: docker.gnivc.ru/git:v2.32.0
   environment:
     GITEA_TOKEN:
