@@ -20,24 +20,24 @@ steps:
 - name: make pkg
   image: alpine:latest
   environment:
+    TZ: Europe/Moscow
     ARCH: x86_64
     RELEASE: 1.1.1
     NAME: nerd-build
-    PACKAGE_TYPE: rpm
+    PKG: rpm
     TG_TOKEN:
       from_secret: tg_token
   volumes:
   - name: temp
     path: /tmp
   commands:
-  - export TZ="Europe/Moscow"
-  - VERSION=$(date +'%Y%m%dT%H%M%S%:z')
-  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}"
+  - VERSION=$(date +'%Y%m%dT%H%M%S')
+  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
-    if [ "$PACKAGE_TYPE" = "rpm" ]; then \
+    if [ "$PKG" = "rpm" ]; then \
         apk add --no-cache rpm; \
-    elif [ "$PACKAGE_TYPE" = "deb" ]; then \
+    elif [ "$PKG" = "deb" ]; then \
         apk add --no-cache binutils tar; \
     fi
   - | 
