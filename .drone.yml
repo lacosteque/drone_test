@@ -103,7 +103,6 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  20231129T160343-1.1.1
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then \
