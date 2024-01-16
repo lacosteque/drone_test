@@ -142,10 +142,10 @@ steps:
     path: /nerd_builder/
   commands:
   - ls -l "$${TEMP_DIR}"
-  - apk add --no-cache curl bash
+  - apk add --no-cache curl bash sh
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - FILE=$(cat "$${PKG_PATH}")
-  - bash supload.sh -u 47066_temp -k "$${PASS}" temp $${"FILE}
+  - sh supload.sh -u 47066_temp -k "$${PASS}" temp $${"FILE}
   depends_on:
   - make pkg
 
