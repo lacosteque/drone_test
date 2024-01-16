@@ -3,7 +3,7 @@ type: docker
 name: default
 
 environment:
-  HOME_DIR: nerd_build
+  HOME_DIR: nerd_builder
   TEMP: temp
 
 steps:
@@ -12,14 +12,17 @@ steps:
   image: alpine:latest
   volumes:
   - name: temp
-    path: /tmp
+    path: ~
+  - name: configs
+    path: /drone/configs
   commands:
   - |
-    mkdir -p "/tmp/$${HOME_DIR}/src/usr/bin/" \
-             "/tmp/$${HOME_DIR}/src/usr/share/" \
-             "/tmp/$${HOME_DIR}/$${TEMP}" \
-             "/tmp/$${HOME_DIR}/output"
+    mkdir -p "~/$${HOME_DIR}/src/usr/bin/" \
+             "~/$${HOME_DIR}/src/usr/share/" \
+             "~/$${HOME_DIR}/$${TEMP}" \
+             "~/$${HOME_DIR}/output"
 
+        
 - name: micro install
   image: alpine:latest
   volumes:
@@ -113,6 +116,26 @@ steps:
   depends_on:
   - build bin
 
+
+- name: pull
+  image: alpine:3.15
+  environment:
+    TG_TOKEN:
+      from_secret: tg_token
+    TO: -1001184051909
+  volumes:
+  - name: temp
+    path: /tmp
+  commands:
+  - export PATH_FILE=$(cat "/tmp/$${HOME_DIR}/path.txt") 
+  - apk add --update --no-cache curl
+  - |
+     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
+        -F chat_id="$${TO}" \
+        -F parse_mode="HTML" \
+        -F document=@$${PATH_FILE}
+  depends_on:
+  - make pkg
   
 
         
@@ -123,6 +146,9 @@ volumes:
 - name: temp
   host:
     path: /tmp
+
+- name: configs
+  temp: {}
 
 - name: docker-socket
   host:
