@@ -41,7 +41,7 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - | 
-    fpm -s dir -t $${PACKAGE_TYPE} \
+    fpm -s dir -t $${PKG} \
         -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
