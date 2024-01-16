@@ -17,7 +17,8 @@ steps:
   - |
     mkdir -p "/tmp/$${HOME_DIR}/pkg/usr/bin/" \
              "/tmp/$${HOME_DIR}/pkg/usr/share/" \
-             "/tmp/$${HOME_DIR}/$${TEMP}"
+             "/tmp/$${HOME_DIR}/$${TEMP}" \
+             "/tmp/$${HOME_DIR}/output"
 
 - name: prepared loki
   image: alpine:latest
@@ -65,7 +66,7 @@ steps:
   - rm -rf "/tmp/$${HOME_DIR}/"
   - apk add --update --no-cache go
   - mkdir -p "/tmp/$${HOME_DIR}/usr/bin"
-  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/usr/bin/hello" main.go
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/pkg/usr/bin/hello" main.go
   depends_on:
   - prepared loki
 
@@ -90,7 +91,7 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  - export PATH_FILE="/tmp/$${HOME_DIR}/pkg/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
+  - export PATH_FILE="/tmp/$${HOME_DIR}/output/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
     fpm -s dir -t $${PKG} \
         -p "$${PATH_FILE}" \
@@ -98,7 +99,7 @@ steps:
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
         -C "/tmp/$${HOME_DIR}/pkg/" .
-  - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/tmp/path.txt"
+  - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/$${TEMP}/path.txt"
   depends_on:
   - build bin
 
