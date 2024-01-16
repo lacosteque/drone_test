@@ -20,6 +20,15 @@ steps:
              "/tmp/$${HOME_DIR}/$${TEMP}" \
              "/tmp/$${HOME_DIR}/output"
 
+- name: micro install
+  image: alpine:latest
+  volumes:
+  - name: temp
+    path: /tmp
+  commands:
+  - apk add --update --no-cache micro
+  - mv $(which sstpc) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+
 - name: prepared loki
   image: alpine:latest
   environment:
