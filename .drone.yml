@@ -38,7 +38,7 @@ steps:
         
         #rm -i "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs/var/run"
         #cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json"
-        jq '{Args: .[0].Config.Args} + del(.[0].Config, .[0].Enabled)' "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" > /tmp/new_file.json
+        jq '{Args: .Config.Args} + del(.Config, .Enabled)' "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" > /tmp/new_file.json
         #cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq '.[0].Config.Args as $args | {Args: $args} + .[0] | del(.Config, .Enabled)' > /tmp/new_file.json
         
       else
