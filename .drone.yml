@@ -31,7 +31,13 @@ steps:
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
-  - docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+  - | 
+    if sudo docker plugin ls | grep -q 'grafana/loki-docker-driver:$${VERSION}'; then
+      echo "Plugin already exists"
+    else
+      docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+    fi
+    
   - | 
     loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$loki_id" ]; then
@@ -44,7 +50,6 @@ steps:
         tar -czf "/tmp/${HOME_DIR}/pkg/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \ 
                  "/tmp/${HOME_DIR}/tmp/rootfs" \
                  "/tmp/${HOME_DIR}/tmp/config.json"
-        
       else
         echo "Loki Logging Driver not found."
       fi
