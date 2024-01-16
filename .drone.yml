@@ -14,14 +14,13 @@ steps:
   volumes:
   - name: temp
     path: /tmp
-  #volumes:
-    #- name: docker-socket
-      #path: /var/run/docker.sock
-  #privileged: true
+  volumes:
+    - name: docker-socket
+      path: /var/run/docker.sock
+  privileged: true
   commands:
   - apk add --update --no-cache docker jq
-  - service docker start
-  - docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+  #- docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
   - | 
     loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$loki_id" ]; then
