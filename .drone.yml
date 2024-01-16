@@ -59,7 +59,7 @@ steps:
   - | 
     LOKI_ID=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$${LOKI_ID}" ]; then
-        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${$${LOKI_ID}}")
+        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
 
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
