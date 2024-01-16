@@ -9,15 +9,13 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
 
 steps:
-- name: pull
-  image: alpine:3.15
+- name: clone
+  image: docker.gnivc.ru/git:v2.32.0
   environment:
-    TG_TOKEN:
-      from_secret: tg_token
-    TO: -1001184051909
+    GITEA_TOKEN:
+      from_secret: gitea_token
   commands:
-  - export PATH_FILE=$(cat "/tmp/$${HOME_DIR}/path.txt") 
-  - apk add --update --no-cache curl
+  - ls -l
 
   
 
