@@ -33,7 +33,7 @@ steps:
     path: /var/lib/docker/plugins/
   privileged: true
   commands:
-  - apk add --update --no-cache docker jq tar
+  - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
       echo "Plugin already exists"
