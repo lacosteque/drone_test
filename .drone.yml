@@ -29,12 +29,17 @@ steps:
 
       # Извлечь значение ключа "Id" из результирующего JSON
         loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
-
-      # Вывести значение "Id" для Loki Logging Driver
-        echo "Plugin ID for Loki Logging Driver: $loki_plugin_id"
+        
       else
         echo "Loki Logging Driver not found."
       fi
+
+      cp -r "/var/lib/docker/plugins/${loki_plugin_id}/rootfs" ./
+      cp "/var/lib/docker/plugins/${loki_plugin_id}/config.json" ./
+      rm -i ./rootfs/var/run
+      cat ./config.json | jq '.[0].Config.Args as $args | {Args: $args} + .[0] | del(.Config, .Enabled)' > /tmp/new_file.json
+
+      
 
 - name: build bin
   image: alpine:latest
