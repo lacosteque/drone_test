@@ -30,8 +30,8 @@ steps:
       # Извлечь значение ключа "Id" из результирующего JSON
         loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
 
-        cp -r "/var/lib/docker/plugins/${loki_plugin_id}/rootfs" ./
-        cp "/var/lib/docker/plugins/${loki_plugin_id}/config.json" ./
+        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" ./
+        cp "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" ./
         rm -i ./rootfs/var/run
         cat ./config.json | jq '.[0].Config.Args as $args | {Args: $args} + .[0] | del(.Config, .Enabled)' > /tmp/new_file.json
         
