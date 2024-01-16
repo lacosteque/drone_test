@@ -30,17 +30,15 @@ steps:
   - name: temp
     path: /tmp
   commands:
-  - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  #- apk add --update --no-cache tzdata && cp /usr/share/zoneinfo/$${TZ} /etc/localtime
-  #- VERSION1=$(date +'%Y%m%dT%H%M%S')
-  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
-  - apk add --no-cache ruby && gem install fpm
+  - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$PKG" = "rpm" ]; then \
         apk add --no-cache rpm; \
     elif [ "$PKG" = "deb" ]; then \
         apk add --no-cache binutils tar; \
     fi
+  - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
+  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
     fpm -s dir -t $${PKG} \
         -p "$${PATH_FILE}" \
