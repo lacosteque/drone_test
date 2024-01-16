@@ -30,8 +30,8 @@ steps:
   commands:
   - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
-  - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - ls -l /tmp/
+  #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
+  - mv ./micro "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
   depends_on:
   - make structure
 
