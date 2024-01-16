@@ -49,6 +49,7 @@ steps:
         cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
         rm -f "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
         cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
+        ls -l "/tmp/$${HOME_DIR}/$${TEMP}"
         tar -czf "/tmp/$${HOME_DIR}/pkg/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \ 
                  "/tmp/$${HOME_DIR}/$${TEMP}/rootfs" \
                  "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
