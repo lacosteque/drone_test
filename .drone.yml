@@ -38,17 +38,15 @@ steps:
   image: alpine:3.15
   environment:
     VERSION: 2.7.0
-    DOCKER_VERSION: 17.09.0-ce
   volumes:
   - name: builder
     path: /nerd_builder/
   - name: docker-socket
     path: /var/run/docker.sock
   - name: docker-plugins
-    path: /var/lib/docker/plugins/
+    path: /plugins/
   privileged: true
   commands:
-  - apk search -v docker
   - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
@@ -63,13 +61,11 @@ steps:
         inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
         loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
 
-        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
-        rm -f "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
-        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
-        tar -czf "/tmp/$${HOME_DIR}/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \
-            -C "/tmp/$${HOME_DIR}/$${TEMP}"\
-            rootfs \
-            config.json
+        cp -r "/plugins/$${loki_plugin_id}/rootfs" "$${TEMP_DIR}"
+        rm -f "{TEMP_DIR}/rootfs/var/run"
+        cat "/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
+        tar -czf "/$${SHARE_DIR}/loki-docker-driver-$${VERSION}.tar.gz" \
+            -C "$${TEMP_DIR}" rootfs config.json
       else
         echo "Loki Logging Driver not found."
       fi
