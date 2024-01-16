@@ -25,13 +25,12 @@ steps:
     RELEASE: 1.1.1
     NAME: nerd-build
     PKG: rpm
-    TG_TOKEN:
-      from_secret: tg_token
   volumes:
   - name: temp
     path: /tmp
   commands:
-  - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
+  - echo $${TZ} > /etc/timezone
+  - VERSION=$(date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
