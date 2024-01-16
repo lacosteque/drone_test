@@ -9,18 +9,13 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
 
 steps:
-
 - name: make structure
   image: alpine:latest
   volumes:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - |
-    mkdir -p "$${BIN_DIR}" \
-             "$${SHARE_DIR}" \
-             "$${TEMP_DIR}" \
-             "$${OUTPUT_DIR}"
+  - mkdir -p "$${BIN_DIR}" "$${SHARE_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
   
 - name: micro install
   image: alpine:3.15
