@@ -22,7 +22,6 @@ steps:
   environment:
     ARCH: x86_64
     RELEASE: 1.1.1
-    VERSION: timestamp
     NAME: nerd-build
     PACKAGE_TYPE: rpm
     TG_TOKEN:
@@ -31,6 +30,7 @@ steps:
   - name: temp
     path: /tmp
   commands:
+  - VERSION=$(date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
