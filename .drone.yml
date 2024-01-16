@@ -9,7 +9,7 @@ environment:
 steps:
 
 - name: make structure
-  image: alpine:latest
+  image: alpine:3.15
   volumes:
   - name: builder_dir
     path: ~
@@ -22,7 +22,7 @@ steps:
 
         
 - name: micro install
-  image: alpine:latest
+  image: alpine:3.15
   volumes:
   - name: builder_dir
     path: ~
