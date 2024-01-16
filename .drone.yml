@@ -27,6 +27,7 @@ steps:
   - curl https://getmic.ro | bash
   #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
   - mv ./micro "$${BIN_DIR}/nerdmicro"
+  - ls -l /nerd_builder/
   depends_on:
   - make structure
 
