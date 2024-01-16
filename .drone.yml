@@ -3,8 +3,10 @@ type: docker
 name: default
 
 environment:
-  BUILDER: nerd_builder
-  TEMP: temp
+  BIN_DIR: "/nerd_builder/src/usr/bin/"
+  SHARE_DIR: "/nerd_builder/src/usr/share/"
+  TEMP_DIR: "/nerd_builder/temp"
+  OUTPUT_DIR: "/nerd_builder/output"
 
 steps:
 
@@ -15,10 +17,10 @@ steps:
     path:  /nerd_builder/
   commands:
   - |
-    mkdir -p "/$${BUILDER}/src/usr/bin/" \
-             "/$${BUILDER}/src/usr/share/" \
-             "/$${BUILDER}/$${TEMP}" \
-             "/$${BUILDER}/output"
+    mkdir -p "$${BIN_DIR}" \
+             "$${SHARE_DIR}" \
+             "$${TEMP_DIR}" \
+             "$${OUTPUT_DIR}"
 
         
 - name: micro install
@@ -30,7 +32,7 @@ steps:
   - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
   #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - mv ./micro "/$${BUILDER}/src/usr/bin/nerdmicro"
+  - mv ./micro "$${BIN_DIR}/nerdmicro"
   depends_on:
   - make structure
 
