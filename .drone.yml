@@ -142,7 +142,7 @@ steps:
     path: /nerd_builder/
   commands:
   - ls -l "$${TEMP_DIR}"
-  - apk add --no-cache curl
+  - apk add --no-cache curl bash
   - curl -O https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - mv supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
