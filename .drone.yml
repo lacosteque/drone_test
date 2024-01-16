@@ -98,6 +98,7 @@ steps:
     NAME: nerd-build
     PKG: rpm
     LICENSE: GNU GPL
+    LOG: debug
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -117,11 +118,13 @@ steps:
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
-        -l "$${LICENSE}" \
+        --license "$${LICENSE}" \
+        --log "$${LOG}" \
+        --description "Средство для автоматизированного обновления Docker-контейнеров 🤓"
         -C "$${SRC_DIR}" .
   - echo "$${PATH_FILE}" > "$${TEMP_DIR}/pkg_path.txt"
   - cat "$${TEMP_DIR}/pkg_path.txt"
-  - echo $${XXX}
+  - echo "$${XXX}"
   depends_on:
   - build nerd
 
