@@ -7,6 +7,16 @@ environment:
 
 steps:
 
+- name: prepare
+  image: alpine:latest
+  volumes:
+  - name: temp
+    path: /tmp
+  commands:
+  - |
+    mkdir -p "/tmp/${HOME_DIR}/pkg/usr/{bin,share}" \
+             "/tmp/${HOME_DIR}/tmp"
+
 - name: prepared loki
   image: alpine:latest
   environment:
@@ -21,33 +31,25 @@ steps:
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
-  #- docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-
-  - ls -l /var/lib/docker/plugins/
+  - docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
   - | 
     loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
       if [ -n "$loki_id" ]; then
-      # Запустить команду docker plugin inspect с полученным ID
         inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
-
-      # Извлечь значение ключа "Id" из результирующего JSON
         loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
 
-        #cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" ./
-        #cp "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" ./
-        
-        #rm -i "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs/var/run"
-        #cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json"
-        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > /tmp/new_file.json
+        cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/${HOME_DIR}/tmp"
+        rm -i "/tmp/${HOME_DIR}/tmp/rootfs/var/run"
+        cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/${HOME_DIR}/tmp/config.json"
+        tar -czf "/tmp/${HOME_DIR}/pkg/usr/share/loki-docker-driver-$${VERSION}.tar.gz" \ 
+                 "/tmp/${HOME_DIR}/tmp/rootfs" \
+                 "/tmp/${HOME_DIR}/tmp/config.json"
         
       else
         echo "Loki Logging Driver not found."
       fi
 
       
-
-      
-
 - name: build bin
   image: alpine:latest
   volumes:
@@ -82,7 +84,7 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
+  - export PATH_FILE="/tmp/$${HOME_DIR}/pkg/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
     fpm -s dir -t $${PKG} \
         -p "$${PATH_FILE}" \
@@ -90,30 +92,12 @@ steps:
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
         -C "/tmp/$${HOME_DIR}" .
-  - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/path.txt"
+  - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/tmp/path.txt"
   depends_on:
   - build bin
 
   
-- name: pull
-  image: alpine:3.15
-  environment:
-    TG_TOKEN:
-      from_secret: tg_token
-    TO: -1001184051909
-  volumes:
-  - name: temp
-    path: /tmp
-  commands:
-  - export PATH_FILE=$(cat "/tmp/$${HOME_DIR}/path.txt") 
-  - apk add --update --no-cache curl
-  - |
-     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
-        -F chat_id="$${TO}" \
-        -F parse_mode="HTML" \
-        -F document=@$${PATH_FILE}
-  depends_on:
-  - make pkg
+
         
     
   
