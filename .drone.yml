@@ -136,7 +136,6 @@ steps:
     URL: http://10.250.26.8:9000
     PASS:
       from_secret: pass
-    TO: -1001184051909
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -146,7 +145,7 @@ steps:
   - PACKAGE_PATH=$(cat "$${PKG_PATH}") 
   - sh ./supload.sh -u 47066_temp -k "$${PASS}" temp "$${PACKAGE_PATH}"
   depends_on:
-  - build nerd
+  - make pkg
 
 volumes:
 - name: builder
