@@ -17,8 +17,6 @@ steps:
   commands:
   - ls -l
 
-  
-
 
 - name: builder
   temp: {}
