@@ -126,7 +126,6 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - ls -l "$${TEMP_DIR}"
   depends_on:
   - build nerd
 
