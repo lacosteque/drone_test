@@ -76,4 +76,4 @@ steps:
 volumes:
 - name: project_dir
   host:
-    path: /home/nikitin_i/drone/temp
+    path: /tmp
