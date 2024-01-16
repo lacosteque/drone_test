@@ -29,7 +29,7 @@ steps:
     path:  /nerd_builder/
   commands:
   - apk add --update --no-cache curl bash
-  - curl -s https://getmic.ro | bash
+  - curl -s --show-error https://getmic.ro | bash
   - mv ./micro "$${BIN_DIR}/nerdmicro"
   depends_on:
   - make structure
