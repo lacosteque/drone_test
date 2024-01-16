@@ -4,8 +4,8 @@ name: default
 
 
 environment:
-  BIN_DIR: "/nerd_builder/src/usr/bin/"
-  SHARE_DIR: "/nerd_builder/src/usr/share/"
+  BIN_DIR: "/nerd_builder/src/usr/bin"
+  SHARE_DIR: "/nerd_builder/src/usr/share"
   TEMP_DIR: "/nerd_builder/temp"
   OUTPUT_DIR: "/nerd_builder/output"
 
@@ -72,6 +72,22 @@ steps:
   depends_on:
   - micro install
 
+- name: build nerd b
+  image: alpine:latest
+  environment:
+    VERSION: 1.19
+    GOOS: linux
+    GOARCH: amd64
+    CGO_ENABLED: 0
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  commands:
+  - apk add --update --no-cache go@$${VERSION}
+  - go build -o "$${BIN_DIR}/nerd" main.go
+  - ls -l "$${BIN_DIR}"
+  depends_on:
+  - fetch loki docker driver
 
 volumes:
 - name: builder
