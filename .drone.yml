@@ -49,7 +49,7 @@ steps:
   privileged: true
   commands:
   - apk search -v docker
-  - apk add --update --no-cache docker@$${DOCKER_VERSION} jq
+  - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
       echo "Plugin already exists"
