@@ -3,7 +3,7 @@ type: docker
 name: default
 
 environment:
-  BUILDER: "/nerd_builder/"
+  BUILDER: nerd_builder
   TEMP: temp
 
 steps:
@@ -12,10 +12,10 @@ steps:
   image: alpine:3.15
   volumes:
   - name: builder
-    path:  $${BUILDER}
+    path:  nerd_builder
   commands:
   - |
-    mkdir -p "/$${BUILDER}/src/usr/bin/" \
+    mkdir -p "$${BUILDER}/src/usr/bin/" \
              "$${BUILDER}/src/usr/share/" \
              "$${BUILDER}/$${TEMP}" \
              "$${BUILDER}/output"
@@ -25,7 +25,7 @@ steps:
   image: alpine:3.15
   volumes:
   - name: builder
-    path:  $${BUILDER}
+    path:  nerd_builder
   commands:
   - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
