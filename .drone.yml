@@ -28,10 +28,9 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - apk add --update --no-cache curl bash micro
-  #- curl https://getmic.ro | bash
-  - mv $(which micro) "$${BIN_DIR}/nerdmicro"
-  #- mv ./micro "$${BIN_DIR}/nerdmicro"
+  - apk add --update --no-cache curl bash
+  - curl -s https://getmic.ro | bash
+  - mv ./micro "$${BIN_DIR}/nerdmicro"
   depends_on:
   - make structure
 
@@ -98,7 +97,7 @@ steps:
     OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
-    LOG: info
+    LOG: error
   volumes:
   - name: builder
     path: /nerd_builder/
