@@ -111,7 +111,7 @@ steps:
   - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
   - export PATH_FILE="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
   - | 
-    fpm -s dir -t $${src} \
+    fpm -s dir -t "$${SRC_DIR}" \
         -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
