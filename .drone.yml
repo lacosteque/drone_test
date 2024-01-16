@@ -19,7 +19,7 @@ steps:
       path: /var/run/docker.sock
   privileged: true
   commands:
-  - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
+  - docker plugin install -y "grafana/loki-docker-driver:$${VERSION}"
 
 - name: build bin
   image: alpine:latest
