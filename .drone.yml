@@ -31,6 +31,7 @@ steps:
   - name: temp
     path: /tmp
   commands:
+  - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
     if [ "$PACKAGE_TYPE" = "rpm" ]; then \
@@ -40,13 +41,12 @@ steps:
     fi
   - | 
     fpm -s dir -t $${PACKAGE_TYPE} \
-        -p "/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}" \
+        -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
         -C "/tmp/$${HOME_DIR}" .
-        
-  - echo "/tmp/$${HOME_DIR}/$${NAME}-$${TS}-$${VERSION}.$${ARCH}.$${PACKAGE_TYPE}" > /tmp/nerd_build/path.txt
+  - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/path.txt"
   depends_on:
   - build bin
 
