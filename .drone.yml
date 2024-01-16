@@ -5,13 +5,15 @@ name: default
 environment:
   HOME_DIR: nerd_build
 
+
+steps:
+
 - name: check timezone
   image: alpine:latest
   commands:
     - echo "Current date and time: $(date)"
     - echo "Timezone: $(date +'%Z (%z)')"
 
-steps:
 - name: build bin
   image: alpine:latest
   volumes:
