@@ -10,15 +10,7 @@ environment:
 
 steps:
 
-- name: make structure
-  image: alpine:3.15
-  volumes:
-  - name: builder
-    path:  /nerd_builder/
-  commands:
-  
 
-        
 - name: micro install
   image: alpine:3.15
   volumes:
@@ -29,8 +21,7 @@ steps:
   - curl https://getmic.ro | bash
   #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
   - mv ./micro "$${BIN_DIR}/nerdmicro"
-  depends_on:
-  - make structure
+
 
 #volumes:
 #- name: builder_dir
