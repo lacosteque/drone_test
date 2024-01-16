@@ -30,7 +30,7 @@ steps:
   commands:
   - apk add --update --no-cache micro
   - mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - ls - /tmp/
+  - ls -l /tmp/
   depends_on:
   - make structure
 
