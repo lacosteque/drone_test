@@ -15,8 +15,8 @@ steps:
     path: /tmp
   commands:
   - |
-    mkdir -p "/tmp/$${HOME_DIR}/pkg/usr/bin/" \
-             "/tmp/$${HOME_DIR}/pkg/usr/share/" \
+    mkdir -p "/tmp/$${HOME_DIR}/src/usr/bin/" \
+             "/tmp/$${HOME_DIR}/src/usr/share/" \
              "/tmp/$${HOME_DIR}/$${TEMP}" \
              "/tmp/$${HOME_DIR}/output"
 
@@ -50,8 +50,7 @@ steps:
         cp -r "/var/lib/docker/plugins/$${loki_plugin_id}/rootfs" "/tmp/$${HOME_DIR}/$${TEMP}/"
         rm -f "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/var/run"
         cat "/var/lib/docker/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
-        ls -l "/tmp/$${HOME_DIR}/$${TEMP}"
-        tar -czf "/tmp/$${HOME_DIR}/pkg/usr/share/loki-docker-driver-$${VERSION}.tar.gz" "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/" "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
+        tar -czf "/tmp/$${HOME_DIR}/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" "/tmp/$${HOME_DIR}/$${TEMP}/rootfs/" "/tmp/$${HOME_DIR}/$${TEMP}/config.json"
       else
         echo "Loki Logging Driver not found."
       fi
@@ -63,42 +62,41 @@ steps:
   - name: temp
     path: /tmp
   commands:
-  - rm -rf "/tmp/$${HOME_DIR}/"
   - apk add --update --no-cache go
   - mkdir -p "/tmp/$${HOME_DIR}/usr/bin"
-  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/pkg/usr/bin/hello" main.go
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "/tmp/$${HOME_DIR}/src/usr/bin/hello" main.go
   depends_on:
   - prepared loki
 
 
-- name: make pkg
+- name: make src
   image: alpine:latest
   environment:
     TZ: Europe/Moscow
     ARCH: x86_64
     RELEASE: 1.1.1
     NAME: nerd-build
-    PKG: rpm
+    src: rpm
   volumes:
   - name: temp
     path: /tmp
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
-    if [ "$PKG" = "rpm" ]; then \
+    if [ "$src" = "rpm" ]; then \
         apk add --no-cache rpm; \
-    elif [ "$PKG" = "deb" ]; then \
+    elif [ "$src" = "deb" ]; then \
         apk add --no-cache binutils tar; \
     fi
   - export VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  - export PATH_FILE="/tmp/$${HOME_DIR}/output/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PKG}"
+  - export PATH_FILE="/tmp/$${HOME_DIR}/output/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${src}"
   - | 
-    fpm -s dir -t $${PKG} \
+    fpm -s dir -t $${src} \
         -p "$${PATH_FILE}" \
         -n "$${NAME}" \
         -v "$${RELEASE}" \
         -a "$${ARCH}" \
-        -C "/tmp/$${HOME_DIR}/pkg/" .
+        -C "/tmp/$${HOME_DIR}/src/" .
   - echo "$${PATH_FILE}" > "/tmp/$${HOME_DIR}/$${TEMP}/path.txt"
   depends_on:
   - build bin
