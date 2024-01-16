@@ -48,6 +48,7 @@ steps:
     path: /var/lib/docker/plugins/
   privileged: true
   commands:
+  - apk search -v docker
   - apk add --update --no-cache docker@$${DOCKER_VERSION} jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
