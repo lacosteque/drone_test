@@ -31,7 +31,7 @@ steps:
     path: /tmp
   commands:
   - export TZ="Europe/Moscow"
-  - VERSION=$(date +'%Y%m%dT%H%M%S%z')
+  - VERSION=$(date +'%Y%m%dT%H%M%S%:z')
   - export PATH_FILE="/tmp/$${HOME_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${PACKAGE_TYPE}"
   - apk add --update --no-cache ruby && gem install fpm
   - |
@@ -79,3 +79,7 @@ volumes:
 - name: temp
   host:
     path: /tmp
+
+volumes:
+- name: temp
+  temp: {}
