@@ -6,7 +6,7 @@ name: default
 environment:
   SRC_DIR: "/nerd_builder/src"
   BIN_DIR: "/nerd_builder/src/usr/bin"
-  SHARE_DIR: "/nerd_builder/src/usr/share"
+  LOKI_DIR: "/nerd_builder/src/usr/share/loki-driver"
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
@@ -20,7 +20,7 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - mkdir -p "$${BIN_DIR}" "$${SHARE_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
   
 - name: micro install
   image: alpine:3.15
@@ -28,11 +28,10 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - apk add --update --no-cache curl bash
-  - curl https://getmic.ro | bash
-  #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - mv ./micro "$${BIN_DIR}/nerdmicro"
-  - ls -l /nerd_builder/
+  - apk add --update --no-cache curl bash micro
+  #- curl https://getmic.ro | bash
+  - mv $(which micro) "$${BIN_DIR}/nerdmicro"
+  #- mv ./micro "$${BIN_DIR}/nerdmicro"
   depends_on:
   - make structure
 
@@ -58,15 +57,15 @@ steps:
     fi
     
   - | 
-    loki_id=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
-      if [ -n "$loki_id" ]; then
-        inspect_result=$(docker plugin inspect --format '{{json .}}' "$loki_id")
-        loki_plugin_id=$(echo "$inspect_result" | jq -r '.Id')
+    LOKI_ID=$(docker plugin ls | awk '/Loki Logging Driver/ {print $1}')
+      if [ -n "$${LOKI_ID}" ]; then
+        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${$${LOKI_ID}}")
+        LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
 
-        cp -r "/plugins/$${loki_plugin_id}/rootfs" "$${TEMP_DIR}"
-        rm -f "{TEMP_DIR}/rootfs/var/run"
-        cat "/plugins/$${loki_plugin_id}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
-        tar -czf "/$${SHARE_DIR}/loki-docker-driver-$${VERSION}.tar.gz" \
+        cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
+        rm -f "$${TEMP_DIR}/rootfs/var/run"
+        cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
+        tar -czf "/$${LOKI_DIR}/loki-docker-driver-$${VERSION}.tar.gz" \
             -C "$${TEMP_DIR}" rootfs config.json
       else
         echo "Loki Logging Driver not found."
@@ -104,6 +103,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
+  20231129T160343-1.1.1
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then \
@@ -111,15 +111,15 @@ steps:
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then \
         apk add --no-cache binutils tar; \
     fi
-  - VERSION=$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')
-  - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}-$${RELEASE}.$${ARCH}.$${OUTPUT_TYPE}"
+  - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')-$${RELEASE}"
+  - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
         -n "$${NAME}" \
-        -v "$${RELEASE}" \
+        -v "$${VERSION}" \
         -a "$${ARCH}" \
         --license "$${LICENSE}" \
         --log "$${LOG}" \
