@@ -10,7 +10,6 @@ steps:
 - name: check timezone
   image: alpine:latest
   commands:
-  - echo "Current date and time: $(date)"
   - echo "Timezone: $(date +'%Z (%z)')"
 
 - name: build bin
