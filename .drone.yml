@@ -11,8 +11,9 @@ steps:
   environment:
     TZ: Europe/Moscow
   commands:
-  - apk add --no-cache tzdata && cp /usr/share/zoneinfo/$${TZ} /etc/localtime
+  #- apk add --no-cache tzdata && cp /usr/share/zoneinfo/$${TZ} /etc/localtime
   - echo $(date +'%Z (%z)')
+  - echo $(date -d @$${DRONE_BUILD_STARTED})
 
 - name: build bin
   image: alpine:latest
