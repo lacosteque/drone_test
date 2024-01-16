@@ -12,25 +12,25 @@ steps:
   image: alpine:3.15
   volumes:
   - name: builder
-    path:  nerd_builder
+    path:  /nerd_builder/
   commands:
   - |
-    mkdir -p "$${BUILDER}/src/usr/bin/" \
-             "$${BUILDER}/src/usr/share/" \
-             "$${BUILDER}/$${TEMP}" \
-             "$${BUILDER}/output"
+    mkdir -p "/$${BUILDER}/src/usr/bin/" \
+             "/$${BUILDER}/src/usr/share/" \
+             "/$${BUILDER}/$${TEMP}" \
+             "/$${BUILDER}/output"
 
         
 - name: micro install
   image: alpine:3.15
   volumes:
   - name: builder
-    path:  nerd_builder
+    path:  /nerd_builder/
   commands:
   - apk add --update --no-cache curl bash
   - curl https://getmic.ro | bash
   #- mv $(which micro) "/tmp/$${HOME_DIR}/src/usr/bin/nerdmicro"
-  - mv ./micro "$${BUILDER}/src/usr/bin/nerdmicro"
+  - mv ./micro "/$${BUILDER}/src/usr/bin/nerdmicro"
   depends_on:
   - make structure
 
