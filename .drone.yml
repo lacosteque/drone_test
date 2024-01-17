@@ -132,7 +132,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
   - | 
-    ERROR=$(cat "$${TEMP_DIR}/fpm.log" | grep -E "fatal|error") 
+    cat "$${TEMP_DIR}/fpm.log"
     
   #- [ -n echo "$${ERROR}" | grep -E "fatal|error") ] && { echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}"}
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
