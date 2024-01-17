@@ -21,7 +21,7 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}" && ls -l /frfr/
+  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: make micro 
@@ -193,8 +193,8 @@ steps:
   #- make micro
   #- make loki docker driver
   #- build nerd
-  - make pkg
-  #- push storage
+  #- make pkg
+  - push storage
         
   when:
     status:
