@@ -10,6 +10,7 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
+  TG_TEMPLATE: "/nerd_builder/temp/telegram.tpl"
 
 
 steps:
@@ -50,9 +51,10 @@ steps:
   - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
-      echo "Plugin already exists" | tee -a "$${TEMP_DIR}/telegram.tpl"
+      echo "[+] Loki docker driver $${VERSION} already setup" | tee -a "$${TG_TEMPLATE}"
     else
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
+      echo "[-] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
     fi
     
   - | 
@@ -61,13 +63,20 @@ steps:
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
 
+        echo "[+] Copy rootfs." | tee -a "$${TG_TEMPLATE}"
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
+        
+        echo "[+] Remove symlink." | tee -a "$${TG_TEMPLATE}"
         rm -f "$${TEMP_DIR}/rootfs/var/run"
+        
+        echo "[+] Make config." | tee -a "$${TG_TEMPLATE}"
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
+        
+        echo "[+] Make archive." | tee -a "$${TG_TEMPLATE}"
         tar -czf "/$${LOKI_DIR}/loki-docker-driver-$${VERSION}.tar.gz" \
             -C "$${TEMP_DIR}" rootfs config.json
       else
-        echo "Loki Logging Driver not found."
+        echo "[-] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}"
       fi
   depends_on:
   - micro install
@@ -83,6 +92,7 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --update --no-cache go
+  echo "[+] Build nerd." | tee -a "$${TG_TEMPLATE}"
   - go build -o "$${BIN_DIR}/nerd" main.go
   depends_on:
   - fetch loki docker driver
@@ -113,6 +123,7 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
+    echo "[+] Make $${OUTPUT_TYPE} package. | tee -a "$${TG_TEMPLATE}"
     fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
@@ -143,6 +154,7 @@ steps:
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
   - FILE=$(cat "$${PKG_PATH}")
+  echo "[+] Push storage. | tee -a "$${TG_TEMPLATE}"
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   depends_on:
   - make pkg
