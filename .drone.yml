@@ -161,7 +161,7 @@ steps:
   - apk add --update --no-cache curl jq bash
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && mark="✅" || mark="❌"
-    [[ -f "$${TEMP_DIR}/telegram.tpl" ]] && log=$(cat "$${TEMP_DIR}/telegram.tpl")
+    [[ -f "$${TEMP_DIR}/telegram.tpl" ]] && log=123
     text="$${mark} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
     Repo: $${DRONE_REPO}
     "    
