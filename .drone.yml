@@ -92,7 +92,7 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --update --no-cache go
-  echo "[+] Build nerd." | tee -a "$${TG_TEMPLATE}"
+  - echo "[+] Build nerd." | tee -a "$${TG_TEMPLATE}"
   - go build -o "$${BIN_DIR}/nerd" main.go
   depends_on:
   - fetch loki docker driver
