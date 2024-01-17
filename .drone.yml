@@ -171,7 +171,9 @@ steps:
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && MARK="✅" || MARK="❌"
     [[ -f "$${TG_TEMPLATE}" ]] && LOG=$(cat "$${TG_TEMPLATE}")
     HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
-    Repo: $${DRONE_REPO} \n
+    <b>Repo:</b> $${DRONE_REPO}
+    <b>Result:</b>
+    
     "    
   - | 
     OK=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
