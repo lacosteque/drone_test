@@ -101,7 +101,7 @@ steps:
     NAME: nerd-build
     ARCH: x86_64
     RELEASE: 1.1.1
-    OUTPUT_TYPE: rpmz
+    OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
     LOG_LEVEL: error
