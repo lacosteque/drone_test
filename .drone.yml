@@ -22,7 +22,7 @@ steps:
     path:  /nerd_builder/
   commands:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
-  - ls -l /ffrfr/ 2>&1 | tee -a "$${TG_TEMPLATE}" exit 1
+  - ls -l /ffrfr/ 2>&1 | tee -a "$${TG_TEMPLATE}" && exit 1
   
 - name: micro install
   image: alpine:3.15
