@@ -122,8 +122,7 @@ steps:
         mkdir -p %{buildroot}/var/lib/nerd/images
         mkdir -p %{buildroot}/var/lib/nerd/log
         chmod -R 0755 %{buildroot}/var/lib/nerd/
-        
-        exit 0
+      
       EOF
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
