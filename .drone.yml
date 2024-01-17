@@ -127,6 +127,7 @@ steps:
         -C "$${SRC_DIR}" .
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - export MY_VARIABLE="some_value"
+  - echo "$${MY_VARIABLE}"
   depends_on:
   - build nerd
 
