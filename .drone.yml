@@ -113,6 +113,19 @@ steps:
     fi
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
+  - |
+  cat << EOF > "$${TEMP_DIR}"/postinstall.sh
+        #!/bin/bash
+      
+        mkdir -p %{buildroot}/var/lib/nerd/
+        mkdir -p %{buildroot}/var/lib/nerd/compositions
+        mkdir -p %{buildroot}/var/lib/nerd/images
+        mkdir -p %{buildroot}/var/lib/nerd/log
+        chmod -R 0755 %{buildroot}/var/lib/nerd/
+        
+        exit 0
+      EOF
+  
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
@@ -121,6 +134,7 @@ steps:
         -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
+        --after-install "$${TEMP_DIR}"/postinstall.sh \
         --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
@@ -147,17 +161,17 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --no-cache curl bash 
-  #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  #- cp supload.sh /usr/local/bin/supload
-  #- chmod +x /usr/local/bin/supload
-  #- FILE=$(cat "$${PKG_PATH}")
-  #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
-  -| 
+  - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
+  - cp supload.sh /usr/local/bin/supload
+  - chmod +x /usr/local/bin/supload
+  - FILE=$(cat "$${PKG_PATH}")
+  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
+  #-| 
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
-   -H "Date: $(date -R)" \
-   -H "Content-Type: application/octet-stream" \
-   -H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/images/keycloak-14.0.0.tar.gz" | openssl sha1 -hmac "$${LOGIN}" -binary | base64)" \
-   $${URL}/images/keycloak-14.0.0.tar.gz
+   #-H "Date: $(date -R)" \
+   #-H "Content-Type: application/octet-stream" \
+   #-H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/images/keycloak-14.0.0.tar.gz" | openssl sha1 -hmac "$${LOGIN}" -binary | base64)" \
+   #$${URL}/images/keycloak-14.0.0.tar.gz
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make pkg
