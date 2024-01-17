@@ -160,16 +160,16 @@ steps:
   commands:
   - apk add --update --no-cache curl jq bash
   - |
-    [[ "$DRONE_BUILD_STATUS" == "success" ]] && mark="✅" || mark="❌"
+    [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && mark="✅" || mark="❌"
     [[ -f "$${TEMP_DIR}/telegram.tpl" ]] && log=$(cat "$${TEMP_DIR}/telegram.tpl")
-    text="$mark <a href=\"$DRONE_BUILD_LINK\">Build #$DRONE_BUILD_NUMBER</a>
-    Repo: $DRONE_REPO
+    text="$${mark} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
+    Repo: $${DRONE_REPO}
     "    
   - | 
     curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$text$log" | jq '.ok')    
+        --data "text=$${text}$${log}" | jq '.ok')    
     fi    
   depends_on:
   - push storage
