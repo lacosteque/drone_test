@@ -189,12 +189,12 @@ steps:
     fi
 
   depends_on:
-  - make structure
-  - make micro
-  - make loki docker driver
-  - build nerd
+  #- make structure
+  #- make micro
+  #- make loki docker driver
+  #- build nerd
   - make pkg
-  - push storage
+  #- push storage
         
   when:
     status:
