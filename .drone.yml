@@ -21,8 +21,8 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
-  - ls -l /ffrfr/ 2>&1 | tee -a "$${TG_TEMPLATE}" && exit 1
   
 - name: micro install
   image: alpine:3.15
@@ -30,8 +30,9 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache curl bash
-  - curl -s --show-error https://getmic.ro | bash
+  - curl -s --show-error https://getmic.ro | bash 
   - mv ./micro "$${BIN_DIR}/nerdmicro"
   depends_on:
   - make structure
@@ -49,11 +50,12 @@ steps:
     path: /plugins/
   privileged: true
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache docker jq
   - | 
     if [ -z '$(docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}")' ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-      echo "[-] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
+      echo "[!] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
     fi
     
   - | 
@@ -61,21 +63,17 @@ steps:
       if [ -n "$${LOKI_ID}" ]; then
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
-
-        echo "=> Copy rootfs." | tee -a "$${TG_TEMPLATE}"
+        
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
         
-        echo "=> Remove symlink." | tee -a "$${TG_TEMPLATE}"
         rm -f "$${TEMP_DIR}/rootfs/var/run"
         
-        echo "[+] Make config." | tee -a "$${TG_TEMPLATE}"
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
         
-        echo "[+] Make archive." | tee -a "$${TG_TEMPLATE}"
         tar -czf "/$${LOKI_DIR}/loki-docker-driver-$${VERSION}.tar.gz" \
             -C "$${TEMP_DIR}" rootfs config.json
       else
-        echo "[-] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}"
+        echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}"
       fi
   depends_on:
   - micro install
@@ -90,8 +88,8 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache go
-  - echo "=> Build nerd." | tee -a "$${TG_TEMPLATE}"
   - go build -o "$${BIN_DIR}/nerd" main.go
   depends_on:
   - fetch loki docker driver
@@ -111,6 +109,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then \
@@ -122,7 +121,6 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
-    echo "[done] Make $${OUTPUT_TYPE} package." | tee -a "$${TG_TEMPLATE}"
     fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
@@ -133,7 +131,7 @@ steps:
         --log "$${LOG}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" . | tee -a "$${TG_TEMPLATE}"
+        -C "$${SRC_DIR}" . 2>&1 | tee -a "$${TG_TEMPLATE}" || exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   depends_on:
   - build nerd
@@ -148,6 +146,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
+  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --no-cache curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
