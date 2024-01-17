@@ -132,8 +132,9 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
   - |
-    [ -n grep -E "fatal|error" "$${TEMP_DIR}/fpm.log" ] \ 
-    && { cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" }
+    if [ -n grep -E "fatal|error" "$${TEMP_DIR}/fpm.log" ]; then 
+      cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" ;
+    fi
     
   #- [ -n grep -E "fatal|error" "$${TEMP_DIR}/fpm.log" ] && { cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" }
   #- ERROR=$(grep -E "fatal|error" "$${TEMP_DIR}/fpm.log")  | tee -a "$${TG_TEMPLATE}"
