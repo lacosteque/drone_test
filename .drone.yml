@@ -113,17 +113,6 @@ steps:
     fi
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
-  - |
-    cat << EOF > "/nerd_builder/temp/post_install.sh"
-        #!/bin/bash
-      
-        mkdir -p %{buildroot}/var/lib/nerd/
-        mkdir -p %{buildroot}/var/lib/nerd/compositions
-        mkdir -p %{buildroot}/var/lib/nerd/images
-        mkdir -p %{buildroot}/var/lib/nerd/log
-        chmod -R 0755 %{buildroot}/var/lib/nerd/
-      
-      EOF
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
@@ -132,7 +121,6 @@ steps:
         -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
-        --after-install "$${TEMP_DIR}/post_install.sh" \
         --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
