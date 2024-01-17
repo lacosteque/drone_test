@@ -10,7 +10,7 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
-  TG_TEMPLATE: "/nerd_builder/temp/telegram.tpl"
+  TG_TEMPLATE: "/nerd_builder/telegram.tpl"
 
 
 steps:
@@ -21,7 +21,7 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
+    - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
   
 - name: micro install
