@@ -182,6 +182,7 @@ steps:
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
         --data "text=$${text}$${log}" | jq '.ok')  
+        echo "$${ok}"
   - |
     if [[ "$ok" == "false" ]]; then
       cat "$${TEMP_DIR}/telegram.tpl" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
