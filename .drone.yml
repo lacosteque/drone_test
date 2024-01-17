@@ -36,8 +36,8 @@ steps:
 
     exit 0
     EOF
-
-  
+    
+    chmod +x "$${POST_INSTALL}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: make micro 
