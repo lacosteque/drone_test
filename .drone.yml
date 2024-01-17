@@ -114,7 +114,7 @@ steps:
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - |
-    cat << EOF > "$${TEMP_DIR}/post_install.sh"
+    cat << EOF > "/nerd_builder/temp/post_install.sh"
         #!/bin/bash
       
         mkdir -p %{buildroot}/var/lib/nerd/
@@ -125,7 +125,6 @@ steps:
         
         exit 0
       EOF
-  
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -s "$${INPUT_TYPE}" \
