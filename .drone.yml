@@ -140,6 +140,8 @@ steps:
     URL: http://10.250.26.8:9000
     PASS:
       from_secret: pass
+    LOGIN:
+      from_secret: minio_login
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -150,6 +152,12 @@ steps:
   #- chmod +x /usr/local/bin/supload
   #- FILE=$(cat "$${PKG_PATH}")
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
+  -| 
+   #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
+   -H "Date: $(date -R)" \
+   -H "Content-Type: application/octet-stream" \
+   -H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/images/keycloak-14.0.0.tar.gz" | openssl sha1 -hmac "$${LOGIN}" -binary | base64)" \
+   $${URL}/images/keycloak-14.0.0.tar.gz
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make pkg
@@ -189,11 +197,6 @@ steps:
     fi
 
   depends_on:
-  #- make structure
-  #- make micro
-  #- make loki docker driver
-  #- build nerd
-  #- make pkg
   - push storage
         
   when:
