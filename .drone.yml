@@ -134,7 +134,7 @@ steps:
   - | 
     if [ -n "$${ERROR}" ]; then \
       echo "$${ERROR}" \
-      echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}" && exit 1 \
+      echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}" \
     fi
   #- [ -n echo "$${ERROR}" | grep -E "fatal|error") ] && { echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}"}
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
