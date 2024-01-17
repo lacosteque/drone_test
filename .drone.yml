@@ -28,10 +28,10 @@ steps:
 
     #!/bin/bash
 
-    mkdir -p %{buildroot}/var/lib/nerd/
-    mkdir -p %{buildroot}/var/lib/nerd/compositions
-    mkdir -p %{buildroot}/var/lib/nerd/images
-    mkdir -p %{buildroot}/var/lib/nerd/log
+    %{__mkdir} -p $RPM_BUILD_ROOT%/var/lib/nerd/
+    %{__mkdir} -p $RPM_BUILD_ROOT%/var/lib/nerd/compositions
+    %{__mkdir} -p $RPM_BUILD_ROOT%/var/lib/nerd/images
+    mkdir -p $RPM_BUILD_ROOT%/var/lib/nerd/log
     chmod -R 0755 %{buildroot}/var/lib/nerd/
 
     exit 0
