@@ -16,13 +16,16 @@ environment:
 
 steps:
 
-- name: make structure
+- name: preparation
   image: alpine:latest
   volumes:
   - name: builder
     path:  /nerd_builder/
   commands:
+  #make structure
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+
+  #make post install script
   - |
     cat << EOF > "$${POST_INSTALL}"
 
@@ -51,7 +54,7 @@ steps:
   - mv ./micro "$${BIN_DIR}/nerdmicro" && chmod +x "$${BIN_DIR}/nerdmicro"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - make structure
+  - preparation
 
 - name: make loki docker driver 
   image: alpine:3.15
@@ -81,13 +84,13 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
         rm -f "$${TEMP_DIR}/rootfs/var/run"
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > "$${TEMP_DIR}/config.json"
-        tar -czf "/$${LOKI_DIR}/loki-docker-driver-$${VERSION}.tar.gz" -C "$${TEMP_DIR}" rootfs config.json
+        tar -czf "/$${LOKI_DIR}/loki-docker-driver-$${VERSION}.tar.gz" -C "$${TEMP_DIR}" -9 rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
     - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - make structure
+  - preparation
 
 - name: build nerd
   image: alpine:3.15
@@ -103,7 +106,7 @@ steps:
   - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go && chmod +x "$${BIN_DIR}/nerd"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - make structure
+  - preparation
 
 - name: make pkg
   image: alpine:3.15
@@ -140,7 +143,7 @@ steps:
         --after-install "$${POST_INSTALL}" \
         --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
-        --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
+        --description "Versatile tool to support smart deployment process" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
   - grep -qE "fatal|error" "$TEMP_DIR/fpm.log" && cat "$TEMP_DIR/fpm.log" | tee -a "$TG_TEMPLATE" && exit 1
