@@ -132,7 +132,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | grep -E "fatal|error") 
     
-    [ -n "$ERROR" ] && { echo "$ERROR" | tee -a "$TG_TEMPLATE" && exit 1; }
+    [ -n "$${ERROR}" ] && { echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}" && exit 1; }
   
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
