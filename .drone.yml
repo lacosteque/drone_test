@@ -114,7 +114,7 @@ steps:
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - |
-    cat << EOF > "$${TEMP_DIR}"/postinstall.sh
+    cat << EOF > "$${TEMP_DIR}/post_install.sh"
         #!/bin/bash
       
         mkdir -p %{buildroot}/var/lib/nerd/
@@ -134,7 +134,7 @@ steps:
         -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
-        --after-install "$${TEMP_DIR}/postinstall.sh" \
+        --after-install "$${TEMP_DIR}/post_install.sh" \
         --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
