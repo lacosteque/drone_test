@@ -22,7 +22,7 @@ steps:
     path:  /nerd_builder/
   commands:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
-  - ls -l /ffrfr/
+  - ls -l /ffrfr/ || > | tee -a "$${TG_TEMPLATE}"
   
 - name: micro install
   image: alpine:3.15
@@ -193,6 +193,10 @@ steps:
 
   depends_on:
   - make structure
+  - micro install
+  - fetch loki docker driver
+  - build nerd
+  - make pkg
   - push storage
         
   when:
