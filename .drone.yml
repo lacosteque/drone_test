@@ -120,7 +120,7 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
-    fpm -s "$${INPUT_TYPE}" \
+    ERROR=$(fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
         -n "$${NAME}" \
@@ -130,10 +130,10 @@ steps:
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" . | ERROR=$(grep -E "fatal|error") 
+        -C "$${SRC_DIR}" . | grep -E "fatal|error") 
         
     if [ -n "$${ERROR}" ]; then
-      echo $${ERROR} | tee -a "$${TG_TEMPLATE}" && exit 1
+      echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}" && exit 1
     fi
   
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
