@@ -51,7 +51,7 @@ steps:
   - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
-      echo "[+] Loki docker driver $${VERSION} already setup" | tee -a "$${TG_TEMPLATE}"
+      echo "[\+\] Loki docker driver $${VERSION} already setup" | tee -a "$${TG_TEMPLATE}"
     else
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
       echo "[-] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
@@ -107,7 +107,7 @@ steps:
     OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
-    LOG: error
+    LOG: info
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -134,7 +134,7 @@ steps:
         --log "$${LOG}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" .
+        -C "$${SRC_DIR}" . | tee -a "$${TG_TEMPLATE}"
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   depends_on:
   - build nerd
@@ -178,10 +178,19 @@ steps:
     Repo: $${DRONE_REPO}
     "    
   - | 
-    curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
+    ok=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$${text}$${log}" | jq '.ok'  
+        --data "text=$${text}$${log}" | jq '.ok')  
+  - |
+    if [[ "$ok" == "false" ]]; then
+      cat "$${TEMP_DIR}/telegram.tpl" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
+      curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
+        -F chat_id="$${TO}" \
+        -F parse_mode="HTML" \
+        -F caption="$text" \
+        -F document=@"$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
+    fi 
         
   depends_on:
   - push storage
