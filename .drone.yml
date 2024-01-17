@@ -130,7 +130,6 @@ steps:
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - make structure
   - make micro
   - make loki docker driver
   - build nerd
