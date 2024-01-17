@@ -155,7 +155,7 @@ steps:
   depends_on:
   - make pkg
 
-- name: telegram
+- name: send telegram notification
   image: alpine:3.15
   environment:
     TG_TOKEN:
