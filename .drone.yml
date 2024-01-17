@@ -181,7 +181,7 @@ steps:
     ok=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$${log}")  
+        --data "text=$${text}")  
         echo "$${ok}"
   - |
     if [[ "$ok" == "false" ]]; then
