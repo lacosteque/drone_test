@@ -172,7 +172,6 @@ steps:
     [[ -f "$${TG_TEMPLATE}" ]] && LOG=$(cat "$${TG_TEMPLATE}")
     HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
     <b>Repo:</b> $${DRONE_REPO}
-    <b>Result:</b>
     
     "    
   - | 
