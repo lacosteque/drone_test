@@ -116,15 +116,13 @@ steps:
     ARCH: x86_64
     RELEASE: 1.1.1
     OUTPUT_TYPE: rpm
-    INPUT_TYPE: dir
-    LICENSE: GNU GPL
-    LOG_LEVEL: info
   volumes:
   - name: builder
     path: /nerd_builder/
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
+    cp "/usr/share/zoneinfo/$${TZ}" /etc/localtime
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
         apk add --no-cache rpm; 
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
@@ -134,17 +132,17 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
-    fpm -s "$${INPUT_TYPE}" \
-        -t "$${OUTPUT_TYPE}" \
+    fpm -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
-        -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
-        --rpm-compression bzip2 \
-        --rpm-compression-level 9 \
+        --input-type "dir" \
+        --name "nerd-build" \
+        --maintainer "JSC GNIVC" \
+        --category "Applications/System" \
         --after-install "$${POST_INSTALL}" \
-        --log "$${LOG_LEVEL}" \
-        --license "$${LICENSE}" \
+        --log "error" \
+        --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
