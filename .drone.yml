@@ -84,7 +84,7 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --update --no-cache go
-  - go build -o "$${BIN_DIR}/nerd" main.go
+  - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make structure
