@@ -102,7 +102,7 @@ steps:
     ARCH: x86_64
     RELEASE: 1.1.1
     OUTPUT_TYPE: rpm
-    INPUT_TYPE: dir
+    INPUT_TYPE: dirz
     LICENSE: GNU GPL
     LOG_LEVEL: error
   volumes:
@@ -130,7 +130,12 @@ steps:
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" . | grep -E "fatal|error" | tee -a "$${TG_TEMPLATE}" && exit 1
+        -C "$${SRC_DIR}" . | ERROR=$(grep -E "fatal|error") 
+        
+    if [ -n "$${ERROR}" ]; then
+      echo $${ERROR} | tee -a "$${TG_TEMPLATE}" && exit 1
+    fi
+  
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
