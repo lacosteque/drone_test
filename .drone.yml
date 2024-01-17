@@ -104,7 +104,7 @@ steps:
     OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
-    LOG: error
+    LOG_LEVEL: error
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -126,10 +126,11 @@ steps:
         -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
+        --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" . 2>&1 | tee -a "$${TG_TEMPLATE}" && exit 1
+        -C "$${SRC_DIR}" . | tee -a "$${TG_TEMPLATE}" 
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
