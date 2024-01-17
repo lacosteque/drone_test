@@ -32,7 +32,7 @@ steps:
   commands:
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
-  - mv ./micro "$${BIN_DIR}/nerdmicro"
+  - mv ./micro "$${BIN_DIR}/nerdmicro" && chmod +x "$${BIN_DIR}/nerdmicro"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make structure
@@ -84,7 +84,7 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --update --no-cache go
-  - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go
+  - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go && chmod +x "$${BIN_DIR}/nerd"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make structure
