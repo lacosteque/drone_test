@@ -21,8 +21,8 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: micro install
   image: alpine:3.15
@@ -30,10 +30,10 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
   - mv ./micro "$${BIN_DIR}/nerdmicro"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make structure
 
@@ -50,7 +50,6 @@ steps:
     path: /plugins/
   privileged: true
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache docker jq
   - | 
     if [ -z '$(docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}")' ]; then
@@ -75,6 +74,7 @@ steps:
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}"
       fi
+    - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - micro install
 
@@ -88,9 +88,9 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --update --no-cache go
   - go build -o "$${BIN_DIR}/nerd" main.go
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - fetch loki docker driver
 
@@ -109,7 +109,6 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then \
@@ -133,6 +132,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . 2>&1 | tee -a "$${TG_TEMPLATE}" || exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - build nerd
 
@@ -146,7 +146,6 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - echo "Execute => $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   - apk add --no-cache curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
@@ -154,6 +153,7 @@ steps:
   - FILE=$(cat "$${PKG_PATH}")
   - echo "=> Push storage." | tee -a "$${TG_TEMPLATE}"
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make pkg
 
