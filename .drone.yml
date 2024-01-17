@@ -11,6 +11,7 @@ environment:
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
   TG_TEMPLATE: "/nerd_builder/telegram.tpl"
+  POST_INSTALL: "/nerd_builder/post_install.sh"
 
 
 steps:
@@ -22,6 +23,21 @@ steps:
     path:  /nerd_builder/
   commands:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+  - |
+    cat << EOF > "$${POST_INSTALL}"
+
+    #!/bin/bash
+
+    mkdir -p %{buildroot}/var/lib/nerd/
+    mkdir -p %{buildroot}/var/lib/nerd/compositions
+    mkdir -p %{buildroot}/var/lib/nerd/images
+    mkdir -p %{buildroot}/var/lib/nerd/log
+    chmod -R 0755 %{buildroot}/var/lib/nerd/
+
+    exit 0
+    EOF
+
+  
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: make micro 
@@ -121,6 +137,7 @@ steps:
         -n "$${NAME}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
+        --after-install "$${POST_INSTALL}" \
         --log "$${LOG_LEVEL}" \
         --license "$${LICENSE}" \
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
