@@ -22,6 +22,7 @@ steps:
     path:  /nerd_builder/
   commands:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+  - echo "$${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: micro install
   image: alpine:3.15
@@ -63,10 +64,10 @@ steps:
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
 
-        echo "[+] Copy rootfs." | tee -a "$${TG_TEMPLATE}"
+        echo "=> Copy rootfs." | tee -a "$${TG_TEMPLATE}"
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" "$${TEMP_DIR}"
         
-        echo "[+] Remove symlink." | tee -a "$${TG_TEMPLATE}"
+        echo "=> Remove symlink." | tee -a "$${TG_TEMPLATE}"
         rm -f "$${TEMP_DIR}/rootfs/var/run"
         
         echo "[+] Make config." | tee -a "$${TG_TEMPLATE}"
@@ -92,7 +93,7 @@ steps:
     path: /nerd_builder/
   commands:
   - apk add --update --no-cache go
-  - echo "[+] Build nerd." | tee -a "$${TG_TEMPLATE}"
+  - echo "=> Build nerd." | tee -a "$${TG_TEMPLATE}"
   - go build -o "$${BIN_DIR}/nerd" main.go
   depends_on:
   - fetch loki docker driver
@@ -123,7 +124,7 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
-    echo "[+] Make $${OUTPUT_TYPE} package." | tee -a "$${TG_TEMPLATE}"
+    echo "[done] Make $${OUTPUT_TYPE} package." | tee -a "$${TG_TEMPLATE}"
     fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
@@ -154,7 +155,7 @@ steps:
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
   - FILE=$(cat "$${PKG_PATH}")
-  - echo "[+] Push storage." | tee -a "$${TG_TEMPLATE}"
+  - echo "=> Push storage." | tee -a "$${TG_TEMPLATE}"
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   depends_on:
   - make pkg
@@ -181,8 +182,7 @@ steps:
     ok=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$${text}$${log}")  
-        echo "$${ok}"
+        --data "text=$${text}$${log}" | jq '.ok')  
   - |
     if [[ "$ok" == "false" ]]; then
       cat "$${TEMP_DIR}/telegram.tpl" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
