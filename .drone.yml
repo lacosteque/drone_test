@@ -133,7 +133,7 @@ steps:
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
   - |
     if grep -qE "fatal|error" "$${TEMP_DIR}/fpm.log"; then
-      cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}"
+      cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" && exit 1;
     fi
 
     
