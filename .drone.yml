@@ -10,7 +10,6 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
-  Z: ""
 
 
 steps:
@@ -127,7 +126,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - export Z="$${PACKAGE_PATH}"
+  - export MY_VARIABLE="some_value"
   depends_on:
   - build nerd
 
@@ -141,7 +140,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - echo "$${Z}" 
+  - echo "$${MY_VARIABLE}" 
   - apk add --no-cache curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
