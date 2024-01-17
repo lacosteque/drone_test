@@ -131,6 +131,10 @@ steps:
         --description "Средство для автоматизированного обновления Docker-контейнеров 🤓" \
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
+  - |
+    [ -n grep -E "fatal|error" "$${TEMP_DIR}/fpm.log" ] \ 
+    && { cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" }
+    
   #- [ -n grep -E "fatal|error" "$${TEMP_DIR}/fpm.log" ] && { cat "$${TEMP_DIR}/fpm.log" | tee -a "$${TG_TEMPLATE}" }
   #- ERROR=$(grep -E "fatal|error" "$${TEMP_DIR}/fpm.log")  | tee -a "$${TG_TEMPLATE}"
   #- [ -n echo "$${ERROR}" | grep -E "fatal|error") ] && { echo "$${ERROR}" | tee -a "$${TG_TEMPLATE}"}
