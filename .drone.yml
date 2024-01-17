@@ -188,7 +188,11 @@ steps:
         -F parse_mode="HTML" \
         -F caption="$text" \
         -F document=@"$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
-    fi 
+    fi
+
+  depends_on:
+  - make structure
+  - push storage
         
   when:
     status:
