@@ -122,13 +122,12 @@ steps:
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
-    cp "/usr/share/zoneinfo/$${TZ}" /etc/localtime
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
         apk add --no-cache rpm; 
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
         apk add --no-cache binutils tar;
     fi
-  - VERSION="$(date +'%Y%m%dT%H%M%S')_$${RELEASE}"
+  - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
@@ -136,6 +135,7 @@ steps:
         -p "$${PACKAGE_PATH}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
+        --chdir "$${SRC_DIR}" \
         --input-type "dir" \
         --name "nerd-build" \
         --maintainer "JSC GNIVC" \
@@ -145,8 +145,7 @@ steps:
         --log "error" \
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
-        --url "https://dev.gnivc.ru/gnivc/nerd/" \
-        -C "$${SRC_DIR}" . | tee -a "$${TEMP_DIR}/fpm.log"
+        --url "https://dev.gnivc.ru/gnivc/nerd/" . | tee -a "$${TEMP_DIR}/fpm.log"
   - grep -qE "fatal|error" "$TEMP_DIR/fpm.log" && cat "$TEMP_DIR/fpm.log" | tee -a "$TG_TEMPLATE" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
