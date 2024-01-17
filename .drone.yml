@@ -114,7 +114,7 @@ steps:
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - |
-  cat << EOF > "$${TEMP_DIR}"/postinstall.sh
+    cat << EOF > "$${TEMP_DIR}"/postinstall.sh
         #!/bin/bash
       
         mkdir -p %{buildroot}/var/lib/nerd/
