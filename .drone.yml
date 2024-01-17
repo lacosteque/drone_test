@@ -24,7 +24,7 @@ steps:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
-- name: micro install
+- name: make micro 
   image: alpine:3.15
   volumes:
   - name: builder
@@ -37,7 +37,7 @@ steps:
   depends_on:
   - make structure
 
-- name: fetch loki docker driver 
+- name: make loki docker driver 
   image: alpine:3.15
   environment:
     VERSION: 2.7.0
@@ -76,7 +76,7 @@ steps:
       fi
     - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - micro install
+  - make structure
 
 - name: build nerd
   image: alpine:3.15
@@ -92,7 +92,7 @@ steps:
   - go build -o "$${BIN_DIR}/nerd" main.go
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
-  - fetch loki docker driver
+  - make structure
 
 - name: make pkg
   image: alpine:3.15
@@ -134,6 +134,8 @@ steps:
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
+  - make structure
+  - make loki docker driver
   - build nerd
 
 - name: push storage
@@ -151,7 +153,6 @@ steps:
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
   - FILE=$(cat "$${PKG_PATH}")
-  - echo "=> Push storage." | tee -a "$${TG_TEMPLATE}"
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
@@ -192,8 +193,8 @@ steps:
 
   depends_on:
   - make structure
-  - micro install
-  - fetch loki docker driver
+  - make micro
+  - make loki docker driver
   - build nerd
   - make pkg
   - push storage
