@@ -128,7 +128,7 @@ steps:
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
         apk add --no-cache binutils tar;
     fi
-  - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
+  - VERSION="$(date +'%Y%m%dT%H%M%S')_$${RELEASE}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
@@ -139,6 +139,7 @@ steps:
         --input-type "dir" \
         --name "nerd-build" \
         --maintainer "JSC GNIVC" \
+        --vendor "JSC GNIVC" \
         --category "Applications/System" \
         --after-install "$${POST_INSTALL}" \
         --log "error" \
