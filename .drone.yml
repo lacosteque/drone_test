@@ -190,8 +190,6 @@ steps:
         -F document=@"$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
     fi 
         
-  depends_on:
-  - $(steps.*.name)
   when:
     status:
     - success
