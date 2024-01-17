@@ -171,7 +171,7 @@ steps:
   - apk add --update --no-cache curl jq bash
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && mark="✅" || mark="❌"
-    [[ -f "$${TEMP_DIR}/telegram.tpl" ]] && log=$(cat "$${TEMP_DIR}/telegram.tpl")
+    [[ -f "$${TG_TEMPLATE}" ]] && log=$(cat "$${TG_TEMPLATE}")
     text="$${mark} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
     Repo: $${DRONE_REPO}
     "    
@@ -182,7 +182,7 @@ steps:
         --data "text=$${text}$${log}" | jq '.ok')  
   - |
     if [[ "$ok" == "false" ]]; then
-      cat "$${TEMP_DIR}/telegram.tpl" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
+      cat "$${TG_TEMPLATE}" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
       curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
