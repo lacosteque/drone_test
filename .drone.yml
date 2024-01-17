@@ -107,7 +107,7 @@ steps:
     OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
-    LOG: info
+    LOG: error
   volumes:
   - name: builder
     path: /nerd_builder/
@@ -181,7 +181,7 @@ steps:
     ok=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$${text}")  
+        --data "text=$${text}$${log}")  
         echo "$${ok}"
   - |
     if [[ "$ok" == "false" ]]; then
