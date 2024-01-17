@@ -50,7 +50,7 @@ steps:
   - apk add --update --no-cache docker jq
   - | 
     if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
-      echo "Plugin already exists"
+      echo "Plugin already exists" | tee -a "$${TEMP_DIR}/telegram.tpl"
     else
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
     fi
@@ -110,7 +110,6 @@ steps:
         apk add --no-cache binutils tar; \
     fi
   - VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')-$${RELEASE}"
-  - echo "$${VERSION}"
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
@@ -126,8 +125,6 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" \
         -C "$${SRC_DIR}" .
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - export MY_VARIABLE="some_value"
-  - echo "$${MY_VARIABLE}"
   depends_on:
   - build nerd
 
@@ -141,7 +138,6 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - echo "$${MY_VARIABLE}" 
   - apk add --no-cache curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
@@ -150,6 +146,37 @@ steps:
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   depends_on:
   - make pkg
+
+- name: telegram
+  image: alpine:3.15
+  environment:
+    TG_TOKEN:
+      from_secret: tg_token
+    TO: -1001184051909
+    MESSAGE_THREAD_ID: 4392 # "Сервисные уведомления"
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  commands:
+  - apk add --update --no-cache curl jq bash
+  - |
+    [[ "$DRONE_BUILD_STATUS" == "success" ]] && mark="✅" || mark="❌"
+    [[ -f "$${TEMP_DIR}/telegram.tpl" ]] && log=$(cat "$${TEMP_DIR}/telegram.tpl")
+    text="$mark <a href=\"$DRONE_BUILD_LINK\">Build #$DRONE_BUILD_NUMBER</a>
+    Repo: $DRONE_REPO
+    "    
+  - | 
+    curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
+        --data "chat_id=$${TO}" \
+        --data "parse_mode=HTML" \
+        --data "text=$text$log" | jq '.ok')    
+    fi    
+  depends_on:
+  - push storage
+  when:
+    status:
+    - success
+    - failure
 
 volumes:
 - name: builder
