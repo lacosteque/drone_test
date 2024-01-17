@@ -22,7 +22,6 @@ steps:
     path:  /nerd_builder/
   commands:
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
-  - echo "$${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: micro install
   image: alpine:3.15
@@ -51,9 +50,7 @@ steps:
   commands:
   - apk add --update --no-cache docker jq
   - | 
-    if docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}"; then
-      echo "[\+\] Loki docker driver $${VERSION} already setup" | tee -a "$${TG_TEMPLATE}"
-    else
+    if [ -z '$(docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}")' ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
       echo "[-] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
     fi
@@ -194,7 +191,7 @@ steps:
     fi 
         
   depends_on:
-  - push storage
+  - $(steps.*.name)
   when:
     status:
     - success
