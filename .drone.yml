@@ -170,7 +170,7 @@ steps:
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
         --data "text=$${text}$${log}" | jq '.ok'  
-    fi    
+        
   depends_on:
   - push storage
   when:
