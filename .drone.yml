@@ -123,7 +123,7 @@ steps:
   - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
-    echo "[+] Make $${OUTPUT_TYPE} package. | tee -a "$${TG_TEMPLATE}"
+    echo "[+] Make $${OUTPUT_TYPE} package." | tee -a "$${TG_TEMPLATE}"
     fpm -s "$${INPUT_TYPE}" \
         -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
@@ -154,7 +154,7 @@ steps:
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
   - FILE=$(cat "$${PKG_PATH}")
-  echo "[+] Push storage. | tee -a "$${TG_TEMPLATE}"
+  - echo "[+] Push storage." | tee -a "$${TG_TEMPLATE}"
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   depends_on:
   - make pkg
