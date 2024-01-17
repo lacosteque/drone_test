@@ -21,7 +21,7 @@ steps:
   - name: builder
     path:  /nerd_builder/
   commands:
-  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
+  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}" && ls -l /frfr/
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   
 - name: make micro 
@@ -96,10 +96,10 @@ steps:
     NAME: nerd-build
     ARCH: x86_64
     RELEASE: 1.1.1
-    OUTPUT_TYPE: rpmc
+    OUTPUT_TYPE: rpm
     INPUT_TYPE: dir
     LICENSE: GNU GPL
-    LOG_LEVEL: error
+    LOG_LEVEL: info
   volumes:
   - name: builder
     path: /nerd_builder/
