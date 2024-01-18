@@ -85,7 +85,7 @@ steps:
     path: /var/run/docker.sock
   - name: docker-plugins
     path: /plugins
-  -name: cache
+  - name: cache
     path: /usr/share
   privileged: true
   commands:
