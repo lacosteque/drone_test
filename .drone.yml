@@ -5,7 +5,7 @@ name: default
 
 environment:
   PKG_PATH: "/temp/pkg_path.txt"
-  TG_TEMPLATE: "/temp/telegram.tpl"
+  LOG: "/temp/build.log"
   LOKI_VERSION: 2.7.0
 
 
@@ -25,7 +25,7 @@ steps:
   commands:
   - apk add --update --no-cache go
   - go build -o /src/usr/bin/nerd cmd/nerd.go
-  - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
   image: alpine:3.15
@@ -38,7 +38,7 @@ steps:
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
   - mkdir -p /src/usr/bin/ && mv micro /src/usr/bin/nerdmicro
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
 - name: make loki 
   image: alpine:3.15
@@ -57,7 +57,7 @@ steps:
   - | 
     if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-      echo "[!] Loki docker driver $${LOKI_VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
+      echo "[!] Loki docker driver $${LOKI_VERSION} not found. Make install" | tee -a "$${LOG}"
     fi
     
   - | 
@@ -70,9 +70,9 @@ steps:
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
         mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
       else
-        echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
+        echo "[!] Loki Logging Driver ID not found." | tee -a "$${LOG}" && exit 1
       fi
-  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
 
 - name: make pkg
   image: alpine:3.15
@@ -132,9 +132,9 @@ steps:
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
         --url "https://dev.gnivc.ru/gnivc/nerd" . | tee -a fpm.log
-  - grep -qE "fatal|error" fpm.log && cat fpm.log | tee -a "$TG_TEMPLATE" && exit 1
+  - grep -qE "fatal|error" fpm.log && cat fpm.log | tee -a "$LOG" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
   depends_on:
   - make micro
   - make loki
@@ -167,7 +167,7 @@ steps:
    #| openssl sha1 -hmac "$${LOGIN}" -binary \
    #| base64)" \
    #"$${URL}/nerd-builds/$${FILENAME}"
-  - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
   depends_on:
   - make pkg
@@ -186,7 +186,7 @@ steps:
   - apk add --update --no-cache curl jq bash
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && MARK="✅" || MARK="❌"
-    [[ -f "$${TG_TEMPLATE}" ]] && LOG=$(cat "$${TG_TEMPLATE}")
+    [[ -f "$${LOG}" ]] && LOG=$(cat "$${LOG}")
     HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
     <b>Repo:</b> $${DRONE_REPO}
     
@@ -198,7 +198,7 @@ steps:
         --data "text=$${HEADER}$${LOG}" | jq '.ok')  
   - |
     if [[ "$${OK}" == "false" ]]; then
-      cat "$${TG_TEMPLATE}" > "status_$${DRONE_BUILD_NUMBER}.log"
+      cat "$${LOG}" > "status_$${DRONE_BUILD_NUMBER}.log"
       curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
