@@ -53,7 +53,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   - name: cache
-    path: /src/usr
+    path: /src/usr/bin
   commands:
   - apk add --update --no-cache go
   - go build -o /src/usr/bin/nerd cmd/nerd.go
@@ -67,7 +67,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   - name: cache
-    path: /src/usr
+    path: /src/usr/bin
   commands:
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
@@ -89,7 +89,7 @@ steps:
   - name: docker-plugins
     path: /plugins
   - name: cache
-    path: /src/usr
+    path: /src/usr/share/loki-driver
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
