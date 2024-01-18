@@ -72,7 +72,7 @@ steps:
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
   #- mv ./micro "$${BIN_DIR}/nerdmicro" && chmod +x "$${BIN_DIR}/nerdmicro"
-  - mv ./micro /src/usr/bin/nerdmicro
+  - mkdir -p /src/usr/bin/ && mv ./micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
