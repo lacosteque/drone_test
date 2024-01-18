@@ -123,8 +123,9 @@ steps:
   volumes:
   - name: builder
     path: /nerd_builder/
-  - name: cache
+  - name: output
     path: /output
+  - name: cache
     path: /src/usr
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
@@ -173,7 +174,7 @@ steps:
   volumes:
   - name: builder
     path: /nerd_builder/
-  - name: cache
+  - name: output
     path: /output
   commands:
   - apk add --no-cache curl bash 
@@ -240,6 +241,9 @@ steps:
 
 volumes:
 - name: cache
+  temp: {}
+
+- name: output
   temp: {}
   
 - name: builder
