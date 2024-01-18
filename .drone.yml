@@ -180,6 +180,7 @@ steps:
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
+  - FILE=$(cat "$${PKG_PATH}") 
 
   - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
