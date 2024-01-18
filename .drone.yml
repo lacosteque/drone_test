@@ -52,7 +52,7 @@ steps:
   volumes:
   - name: builder
     path: /nerd_builder/
-  name: cache
+  - name: cache
     path: /usr/bin
   commands:
   - apk add --update --no-cache go
