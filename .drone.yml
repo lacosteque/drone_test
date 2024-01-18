@@ -10,7 +10,7 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
-  TG_TEMPLATE: "/nerd_builder/temp/telegram.tpl"
+  TG_TEMPLATE: "/tmp/telegram.tpl"
   POST_INSTALL: "/nerd_builder/temp/post_install.sh"
 
 
@@ -50,12 +50,12 @@ steps:
     GOARCH: amd64
     CGO_ENABLED: 0
   volumes:
-  - name: builder
-    path: /nerd_builder/
-  - name: cache
-    path: /src/usr/bin
+  - name: source
+    path: /src
+  - name: temp
+    path: /tmp
   commands:
-  - apk add --update --no-cache go
+  - apk add --update --no-source go
   - go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
@@ -64,15 +64,12 @@ steps:
 - name: make micro 
   image: alpine:3.15
   volumes:
-  - name: builder
-    path: /nerd_builder/
-  - name: cache
-    path: /src/usr/bin
+  - name: source
+    path: /src
   commands:
-  - apk add --update --no-cache curl bash
+  - apk add --update --no-source curl bash
   - curl -s --show-error https://getmic.ro | bash 
-  #- mv ./micro "$${BIN_DIR}/nerdmicro" && chmod +x "$${BIN_DIR}/nerdmicro"
-  - mkdir -p /src/usr/bin/ && mv ./micro /src/usr/bin/nerdmicro
+  - mkdir -p /src/usr/bin/ && mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
@@ -88,11 +85,11 @@ steps:
     path: /var/run/docker.sock
   - name: docker-plugins
     path: /plugins
-  - name: cache
+  - name: source
     path: /src/usr/share/loki-driver
   privileged: true
   commands:
-  - apk add --update --no-cache docker jq
+  - apk add --update --no-source docker jq
   - | 
     if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
@@ -129,16 +126,16 @@ steps:
     path: /nerd_builder/
   - name: output
     path: /output
-  - name: cache
+  - name: source
     path: /src/usr
   commands:
-  - apk add --no-cache ruby tzdata && gem install fpm
+  - apk add --no-source ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
-        apk add --no-cache rpm
+        apk add --no-source rpm
         VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
-        apk add --no-cache binutils tar
+        apk add --no-source binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
   - PACKAGE_PATH="/output/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
@@ -181,7 +178,7 @@ steps:
   - name: output
     path: /output
   commands:
-  - apk add --no-cache curl bash 
+  - apk add --no-source curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
@@ -212,7 +209,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - apk add --update --no-cache curl jq bash
+  - apk add --update --no-source curl jq bash
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && MARK="✅" || MARK="❌"
     [[ -f "$${TG_TEMPLATE}" ]] && LOG=$(cat "$${TG_TEMPLATE}")
@@ -244,7 +241,10 @@ steps:
     - failure
 
 volumes:
-- name: cache
+- name: source
+  temp: {}
+
+- name: temp
   temp: {}
 
 - name: output
