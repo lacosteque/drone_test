@@ -89,7 +89,7 @@ steps:
   - name: docker-plugins
     path: /plugins
   - name: cache
-    path: /src/usr
+    path: /src/usr/share/loki-driver
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -107,7 +107,7 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        mkdir -p /src/usr/share/loki-driver/
+        #mkdir -p /src/usr/share/loki-driver/
         tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
@@ -148,7 +148,7 @@ steps:
         -p "$${PACKAGE_PATH}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
-        --chdir "/src/usr/" \
+        --chdir "/src/" \
         --input-type "dir" \
         --name "$${NAME}" \
         --maintainer "JSC GNIVC" \
