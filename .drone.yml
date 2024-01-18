@@ -4,48 +4,12 @@ name: default
 
 
 environment:
-  SRC_DIR: "/nerd_builder/src"
-  BIN_DIR: "/nerd_builder/src/usr/bin"
-  LOKI_DIR: "/nerd_builder/src/usr/share/loki-driver"
-  OUTPUT_DIR: "/nerd_builder/output"
-  TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/temp/pkg_path.txt"
   TG_TEMPLATE: "/temp/telegram.tpl"
-  POST_INSTALL: "/nerd_builder/temp/post_install.sh"
-
-  LOKI_VERSION: 2.9.1
+  LOKI_VERSION: 2.7.0
 
 
 steps:
-
-- name: preparation
-  image: alpine:latest
-  volumes:
-  - name: builder
-    path:  /nerd_builder/
-  - name: temp
-    path: /temp
-  commands:
-  #make structure
-  - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
-
-  #make post install script
-  - |
-    cat << EOF > "$${POST_INSTALL}"
-
-    #!/bin/bash
-
-    mkdir -p /var/lib/nerd/
-    mkdir -p /var/lib/nerd/compositions
-    mkdir -p /var/lib/nerd/images
-    mkdir -p /var/lib/nerd/log
-    chmod -R 0755 /var/lib/nerd/
-
-    exit 0
-    EOF
-    
-    chmod +x "$${POST_INSTALL}"
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
 
 - name: build nerd
   image: alpine:3.15
@@ -62,8 +26,6 @@ steps:
   - apk add --update --no-cache go
   - go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
-  depends_on:
-  - preparation
   
 - name: make micro 
   image: alpine:3.15
@@ -77,8 +39,6 @@ steps:
   - curl -s --show-error https://getmic.ro | bash 
   - mkdir -p /src/usr/bin/ && mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
-  depends_on:
-  - preparation
 
 - name: make loki 
   image: alpine:3.15
@@ -113,8 +73,6 @@ steps:
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${TG_TEMPLATE}"
-  depends_on:
-  - preparation
 
 - name: make pkg
   image: alpine:3.15
@@ -145,15 +103,6 @@ steps:
 
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
 
-    exit 0
-    EOF
-
-  - |
-    cat << EOF > after-update.sh
-    #!/bin/bash
-    
-    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
-    
     exit 0
     EOF
     
@@ -231,8 +180,6 @@ steps:
     TO: -1001184051909
     MESSAGE_THREAD_ID: 4392 # "Сервисные уведомления"
   volumes:
-  - name: builder
-    path: /nerd_builder/
   - name: temp
     path: /temp
   commands:
@@ -245,18 +192,18 @@ steps:
     
     "    
   - | 
-    OK=$(curl -s "https://zapi.telegram.org/bot$${TG_TOKEN}/sendMessage" \
+    OK=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
         --data "text=$${HEADER}$${LOG}" | jq '.ok')  
   - |
     if [[ "$${OK}" == "false" ]]; then
-      cat "$${TG_TEMPLATE}" > "$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
+      cat "$${TG_TEMPLATE}" > "status_$${DRONE_BUILD_NUMBER}.log"
       curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendDocument" \
         -F chat_id="$${TO}" \
         -F parse_mode="HTML" \
         -F caption="$${HEADER}" \
-        -F document=@"$${TEMP_DIR}/status_$DRONE_BUILD_NUMBER.log"
+        -F document=@"status_$${DRONE_BUILD_NUMBER}.log"
     fi
 
   depends_on:
@@ -272,12 +219,6 @@ volumes:
   temp: {}
 
 - name: temp
-  temp: {}
-
-- name: output
-  temp: {}
-  
-- name: builder
   temp: {}
 
 - name: docker-socket
