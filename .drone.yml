@@ -53,10 +53,10 @@ steps:
   - name: builder
     path: /nerd_builder/
   - name: cache
-    path: /usr/bin
+    path: /src/usr/bin
   commands:
   - apk add --update --no-cache go
-  - go build -o /usr/bin/nerd cmd/nerd.go && chmod +x /usr/bin/nerd
+  - go build -o /src/usr/bin/nerd cmd/nerd.go && chmod +x /src/usr/bin/nerd
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
@@ -86,7 +86,7 @@ steps:
   - name: docker-plugins
     path: /plugins
   - name: cache
-    path: /usr/share
+    path: /src/usr/share
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -104,7 +104,7 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        tar -czf "/usr/share/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
+        tar -czf "/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
