@@ -56,7 +56,7 @@ steps:
     path: /src/usr
   commands:
   - apk add --update --no-cache go
-  - go build -o /src/usr/bin/nerd cmd/nerd.go && chmod +x /src/usr/bin/nerd
+  - go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
@@ -65,14 +65,14 @@ steps:
   image: alpine:3.15
   volumes:
   - name: builder
-    path:  /nerd_builder/
+    path: /nerd_builder/
   - name: cache
     path: /src/usr
   commands:
   - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
   #- mv ./micro "$${BIN_DIR}/nerdmicro" && chmod +x "$${BIN_DIR}/nerdmicro"
-  - mv micro /src/usr/bin/nerdmicro && chmod +x /src/usr/bin/nerdmicro
+  - mv ./micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
@@ -89,7 +89,7 @@ steps:
   - name: docker-plugins
     path: /plugins
   - name: cache
-    path: /src/usr/share/loki-driver
+    path: /src/usr
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -107,7 +107,7 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        #mkdir -p /src/usr/share/loki-driver/
+        mkdir -p /src/usr/share/loki-driver/
         tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
@@ -221,7 +221,7 @@ steps:
     
     "    
   - | 
-    OK=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
+    OK=$(curl -s "https://zapi.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
         --data "text=$${HEADER}$${LOG}" | jq '.ok')  
