@@ -170,7 +170,7 @@ steps:
   #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   #- cp supload.sh /usr/local/bin/supload
   #- chmod +x /usr/local/bin/supload
-  - FILE=$(basename cat "$${PKG_PATH}")
+  - FILE=$(basename $(cat "$${PKG_PATH}"))
   
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   - echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
