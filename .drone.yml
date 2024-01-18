@@ -42,6 +42,22 @@ steps:
     
     chmod +x "$${POST_INSTALL}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
+
+- name: build nerd
+  image: alpine:3.15
+  environment:
+    GOOS: linux
+    GOARCH: amd64
+    CGO_ENABLED: 0
+  volumes:
+  - name: builder
+    path: /nerd_builder/
+  commands:
+  - apk add --update --no-cache go
+  - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go && chmod +x "$${BIN_DIR}/nerd"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
+  depends_on:
+  - preparation
   
 - name: make micro 
   image: alpine:3.15
@@ -89,22 +105,6 @@ steps:
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION}" | tee -a "$${TG_TEMPLATE}"
-  depends_on:
-  - preparation
-
-- name: build nerd
-  image: alpine:3.15
-  environment:
-    GOOS: linux
-    GOARCH: amd64
-    CGO_ENABLED: 0
-  volumes:
-  - name: builder
-    path: /nerd_builder/
-  commands:
-  - apk add --update --no-cache go
-  - go build -o "$${BIN_DIR}/nerd" cmd/nerd.go && chmod +x "$${BIN_DIR}/nerd"
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
 
