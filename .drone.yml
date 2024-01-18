@@ -13,6 +13,8 @@ environment:
   TG_TEMPLATE: "/temp/telegram.tpl"
   POST_INSTALL: "/nerd_builder/temp/post_install.sh"
 
+  LOKI_VERSION: 2.7.0
+
 
 steps:
 
@@ -80,8 +82,6 @@ steps:
 
 - name: make loki 
   image: alpine:3.15
-  environment:
-    VERSION: 2.7.0
   volumes:
   - name: source
     path: /src
@@ -97,22 +97,22 @@ steps:
   - | 
     if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-      echo "[!] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
+      echo "[!] Loki docker driver $${LOKI_VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
     fi
     
   - | 
-    LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}" | awk '{print $1}')
+    LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
       if [ -n "$${LOKI_ID}" ]; then
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
+        mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
-  - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - preparation
 
@@ -140,7 +140,10 @@ steps:
     mkdir -p /var/lib/nerd/compositions
     mkdir -p /var/lib/nerd/images
     mkdir -p /var/lib/nerd/log
+    mkdir -p /var/lib/nerd/plugins/loki-driver
     chmod -R 0755 /var/lib/nerd/
+
+    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
 
     exit 0
     EOF
