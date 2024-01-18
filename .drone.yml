@@ -53,7 +53,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   - name: cache
-    path: /src/usr/bin
+    path: /src/usr
   commands:
   - apk add --update --no-cache go
   - go build -o /src/usr/bin/nerd cmd/nerd.go && chmod +x /src/usr/bin/nerd
@@ -86,7 +86,7 @@ steps:
   - name: docker-plugins
     path: /plugins
   - name: cache
-    path: /src/usr/share
+    path: /src/usr
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -184,7 +184,7 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}" -d 1m
+  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}" -d 5m
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
