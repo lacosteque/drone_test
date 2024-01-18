@@ -143,7 +143,6 @@ steps:
         -p "$${PACKAGE_PATH}" \
         -v "$${VERSION}" \
         -a "$${ARCH}" \
-        #--chdir "$${SRC_DIR}" \
         --chdir "/src/usr/" \
         --input-type "dir" \
         --name "$${NAME}" \
