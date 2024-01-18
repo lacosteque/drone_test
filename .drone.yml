@@ -173,8 +173,7 @@ steps:
   - FILE=$(basename cat "$${PKG_PATH}")
   
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
-  -|
-   echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
+  - echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
