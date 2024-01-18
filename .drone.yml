@@ -9,7 +9,7 @@ environment:
   LOKI_DIR: "/nerd_builder/src/usr/share/loki-driver"
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
-  PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
+  PKG_PATH: "/temp/pkg_path.txt"
   TG_TEMPLATE: "/temp/telegram.tpl"
   POST_INSTALL: "/nerd_builder/temp/post_install.sh"
 
@@ -83,14 +83,14 @@ steps:
   environment:
     VERSION: 2.7.0
   volumes:
+  - name: source
+    path: /src
+  - name: temp
+    path: /temp
   - name: docker-socket
     path: /var/run/docker.sock
   - name: docker-plugins
     path: /plugins
-  - name: source
-    path: /src/
-  - name: temp
-    path: /temp
   privileged: true
   commands:
   - apk add --update --no-cache docker jq
@@ -108,11 +108,7 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        #mkdir -p /src/usr/share/loki-driver/ && 
-        #tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
-        #tar -czf "loki-docker-driver-$${VERSION}.tar.gz" /src/usr/share/loki-driver 
-        tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" --transform="s|^[^/]*|usr/share/loki-driver|" rootfs config.json
-
+        mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
@@ -129,10 +125,6 @@ steps:
     RELEASE: 1.1.1
     OUTPUT_TYPE: rpm
   volumes:
-  - name: builder
-    path: /nerd_builder/
-  - name: output
-    path: /output
   - name: source
     path: /src
   - name: temp
@@ -147,7 +139,7 @@ steps:
         apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
-  - PACKAGE_PATH="/output/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/temp/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
@@ -164,8 +156,8 @@ steps:
         --log "error" \
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
-        --url "https://dev.gnivc.ru/gnivc/nerd" . | tee -a "$${TEMP_DIR}/fpm.log"
-  - grep -qE "fatal|error" "$TEMP_DIR/fpm.log" && cat "$TEMP_DIR/fpm.log" | tee -a "$TG_TEMPLATE" && exit 1
+        --url "https://dev.gnivc.ru/gnivc/nerd" . | tee -a fpm.log
+  - grep -qE "fatal|error" fpm.log && cat fpm.log | tee -a "$TG_TEMPLATE" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
@@ -182,10 +174,6 @@ steps:
     LOGIN:
       from_secret: minio_login
   volumes:
-  - name: builder
-    path: /nerd_builder/
-  - name: output
-    path: /output
   - name: temp
     path: /temp
   commands:
