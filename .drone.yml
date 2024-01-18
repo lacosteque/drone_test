@@ -171,20 +171,20 @@ steps:
   #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   #- cp supload.sh /usr/local/bin/supload
   #- chmod +x /usr/local/bin/supload
-  - FILE=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
-  #- echo "$${FILE}" 
-  - cat "$${PKG_PATH}"
-  
+  - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
+
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   - echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
-   #-H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/nerd-builds/$${FILE}" \ 
+   #-H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/nerd-builds/$${FILENAME}" \ 
    #| openssl sha1 -hmac "$${LOGIN}" -binary \
    #| base64)" \
-   #"$${URL}/nerd-builds/$${FILE}"
+   #"$${URL}/nerd-builds/$${FILENAME}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
+  - echo "url - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">"$${FILENAME}"</a>" | tee -a "$${TG_TEMPLATE}"
+  
   depends_on:
   - make pkg
 
