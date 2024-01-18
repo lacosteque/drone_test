@@ -132,6 +132,20 @@ steps:
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
+    cat << EOF > after-install.sh
+
+    #!/bin/bash
+
+    mkdir -p /var/lib/nerd/
+    mkdir -p /var/lib/nerd/compositions
+    mkdir -p /var/lib/nerd/images
+    mkdir -p /var/lib/nerd/log
+    chmod -R 0755 /var/lib/nerd/
+
+    exit 0
+    EOF
+    
+  - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
         apk add --no-cache rpm
         VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
@@ -152,7 +166,7 @@ steps:
         --maintainer "JSC GNIVC" \
         --vendor "JSC GNIVC" \
         --category "Applications/System" \
-        --after-install "$${POST_INSTALL}" \
+        --after-install "after-install.sh" \
         --log "error" \
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
