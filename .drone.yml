@@ -146,7 +146,7 @@ steps:
         --log "error" \
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
-        --url "https://dev.gnivc.ru/gnivc/nerd/" . | tee -a "$${TEMP_DIR}/fpm.log"
+        --url "https://dev.gnivc.ru/gnivc/nerd" . | tee -a "$${TEMP_DIR}/fpm.log"
   - grep -qE "fatal|error" "$TEMP_DIR/fpm.log" && cat "$TEMP_DIR/fpm.log" | tee -a "$TG_TEMPLATE" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${TG_TEMPLATE}"
