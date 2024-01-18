@@ -13,7 +13,7 @@ environment:
   TG_TEMPLATE: "/temp/telegram.tpl"
   POST_INSTALL: "/nerd_builder/temp/post_install.sh"
 
-  LOKI_VERSION: 2.7.0
+  LOKI_VERSION: 2.9.1
 
 
 steps:
@@ -145,6 +145,15 @@ steps:
 
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
 
+    exit 0
+    EOF
+
+  - |
+    cat << EOF > after-update.sh
+    #!/bin/bash
+    
+    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
+    
     exit 0
     EOF
     
