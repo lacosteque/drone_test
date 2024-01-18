@@ -107,7 +107,8 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        tar -czf "/src/usr/share/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
+        mkdir -p /src/usr/share/loki-driver/
+        tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
