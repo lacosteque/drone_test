@@ -171,15 +171,17 @@ steps:
   #- cp supload.sh /usr/local/bin/supload
   #- chmod +x /usr/local/bin/supload
   - FILE=$(basename cat "$${PKG_PATH}")
+  
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
-  #-| 
-   curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
-   -H "Date: $(date -R)" \
-   -H "Content-Type: application/octet-stream" \
-   -H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/nerd-builds/$${FILE}" \ 
-   | openssl sha1 -hmac "$${LOGIN}" -binary \
-   | base64)" \
-   "$${URL}/nerd-builds/$${FILE}"
+  -|
+   echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
+   #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
+   #-H "Date: $(date -R)" \
+   #-H "Content-Type: application/octet-stream" \
+   #-H "Authorization: AWS "$${LOGIN}":$(echo -en "PUT\n\napplication/octet-stream\n$(date -R)\n/nerd-builds/$${FILE}" \ 
+   #| openssl sha1 -hmac "$${LOGIN}" -binary \
+   #| base64)" \
+   #"$${URL}/nerd-builds/$${FILE}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make pkg
