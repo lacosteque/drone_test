@@ -171,6 +171,7 @@ steps:
   #- cp supload.sh /usr/local/bin/supload
   #- chmod +x /usr/local/bin/supload
   - FILE=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
+  - echo "$${FILE}" 
   
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
   - echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
