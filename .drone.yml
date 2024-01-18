@@ -21,6 +21,8 @@ steps:
   volumes:
   - name: builder
     path:  /nerd_builder/
+  - name: temp
+    path: /temp
   commands:
   #make structure
   - mkdir -p "$${BIN_DIR}" "$${LOKI_DIR}" "$${TEMP_DIR}" "$${OUTPUT_DIR}"
