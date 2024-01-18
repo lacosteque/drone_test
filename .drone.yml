@@ -10,8 +10,8 @@ environment:
   OUTPUT_DIR: "/nerd_builder/output"
   TEMP_DIR: "/nerd_builder/temp"
   PKG_PATH: "/nerd_builder/temp/pkg_path.txt"
-  TG_TEMPLATE: "/nerd_builder/telegram.tpl"
-  POST_INSTALL: "/nerd_builder/post_install.sh"
+  TG_TEMPLATE: "/nerd_builder/temp/telegram.tpl"
+  POST_INSTALL: "/nerd_builder/temp/post_install.sh"
 
 
 steps:
