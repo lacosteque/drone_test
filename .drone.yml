@@ -122,7 +122,7 @@ steps:
         -v "$${VERSION}" \
         -a "$${ARCH}" \
         --chdir "/src/" \
-        --input-type "dir" \
+        --input-type "dirz" \
         --name "$${NAME}" \
         --maintainer "JSC GNIVC" \
         --vendor "JSC GNIVC" \
