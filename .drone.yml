@@ -113,6 +113,7 @@ steps:
   environment:
     TZ: Europe/Moscow
     ARCH: x86_64
+    NAME: nerd-build
     RELEASE: 1.1.1
     OUTPUT_TYPE: rpm
   volumes:
@@ -137,7 +138,7 @@ steps:
         -a "$${ARCH}" \
         --chdir "$${SRC_DIR}" \
         --input-type "dir" \
-        --name "nerd-build" \
+        --name "$${NAME}" \
         --maintainer "JSC GNIVC" \
         --vendor "JSC GNIVC" \
         --category "Applications/System" \
