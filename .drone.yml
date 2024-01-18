@@ -149,7 +149,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd/" . | tee -a "$${TEMP_DIR}/fpm.log"
   - grep -qE "fatal|error" "$TEMP_DIR/fpm.log" && cat "$TEMP_DIR/fpm.log" | tee -a "$TG_TEMPLATE" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE}" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
   - make micro
   - make loki
@@ -174,7 +174,6 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
 
   #- supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
-  - echo "$${FILE}" | tee -a "$${TG_TEMPLATE}"
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
@@ -182,8 +181,7 @@ steps:
    #| openssl sha1 -hmac "$${LOGIN}" -binary \
    #| base64)" \
    #"$${URL}/nerd-builds/$${FILENAME}"
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
-  - echo "url - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">"$${FILENAME}"</a>" | tee -a "$${TG_TEMPLATE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${TG_TEMPLATE}"
   
   depends_on:
   - make pkg
