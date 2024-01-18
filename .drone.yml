@@ -83,14 +83,12 @@ steps:
   environment:
     VERSION: 2.7.0
   volumes:
-  - name: builder
-    path: /nerd_builder/
   - name: docker-socket
     path: /var/run/docker.sock
   - name: docker-plugins
     path: /plugins
   - name: source
-    path: /src/usr/share/loki-driver
+    path: /src/
   - name: temp
     path: /temp
   privileged: true
@@ -110,8 +108,9 @@ steps:
         cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
         rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        mkdir -p /src/usr/share/loki-driver/
-        tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
+        #mkdir -p /src/usr/share/loki-driver/ && 
+        #tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${VERSION}.tar.gz" rootfs config.json
+        tar -czf "loki-docker-driver-$${VERSION}.tar.gz" -C /src/usr/share loki-driver
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${TG_TEMPLATE}" && exit 1
       fi
@@ -195,7 +194,7 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}" -d 5m
+  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}" -d 1d
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
