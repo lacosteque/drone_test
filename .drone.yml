@@ -119,6 +119,8 @@ steps:
   volumes:
   - name: builder
     path: /nerd_builder/
+  - name: cache
+    path: /output
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
@@ -129,7 +131,7 @@ steps:
         apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
-  - PACKAGE_PATH="$${OUTPUT_DIR}/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/output/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
@@ -166,6 +168,8 @@ steps:
   volumes:
   - name: builder
     path: /nerd_builder/
+  - name: cache
+    path: /output
   commands:
   #- apk add --no-cache curl bash 
   #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
@@ -229,6 +233,9 @@ steps:
     - failure
 
 volumes:
+- name: cache
+  temp: {}
+  
 - name: builder
   temp: {}
 
