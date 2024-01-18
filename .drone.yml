@@ -57,7 +57,7 @@ steps:
   - name: temp
     path: /temp
   commands:
-  - apk add --update --no-source go
+  - apk add --update --no-cache go
   - go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${TG_TEMPLATE}"
   depends_on:
@@ -69,7 +69,7 @@ steps:
   - name: source
     path: /src
   commands:
-  - apk add --update --no-source curl bash
+  - apk add --update --no-cache curl bash
   - curl -s --show-error https://getmic.ro | bash 
   - mkdir -p /src/usr/bin/ && mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${TG_TEMPLATE}"
@@ -91,7 +91,7 @@ steps:
     path: /src/usr/share/loki-driver
   privileged: true
   commands:
-  - apk add --update --no-source docker jq
+  - apk add --update --no-cache docker jq
   - | 
     if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
@@ -131,13 +131,13 @@ steps:
   - name: source
     path: /src/usr
   commands:
-  - apk add --no-source ruby tzdata && gem install fpm
+  - apk add --no-cache ruby tzdata && gem install fpm
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
-        apk add --no-source rpm
+        apk add --no-cache rpm
         VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
     elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
-        apk add --no-source binutils tar
+        apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
   - PACKAGE_PATH="/output/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
@@ -180,7 +180,7 @@ steps:
   - name: output
     path: /output
   commands:
-  - apk add --no-source curl bash 
+  - apk add --no-cache curl bash 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   - cp supload.sh /usr/local/bin/supload
   - chmod +x /usr/local/bin/supload
@@ -211,7 +211,7 @@ steps:
   - name: builder
     path: /nerd_builder/
   commands:
-  - apk add --update --no-source curl jq bash
+  - apk add --update --no-cache curl jq bash
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && MARK="✅" || MARK="❌"
     [[ -f "$${TG_TEMPLATE}" ]] && LOG=$(cat "$${TG_TEMPLATE}")
