@@ -87,7 +87,7 @@ steps:
   commands:
   - apk add --update --no-cache docker jq
   - | 
-    if [ -z '$(docker plugin ls | grep "grafana/loki-docker-driver:$${VERSION}")' ]; then
+    if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
       echo "[!] Loki docker driver $${VERSION} not found. Make install" | tee -a "$${TG_TEMPLATE}"
     fi
