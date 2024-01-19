@@ -121,8 +121,10 @@ steps:
 
     #!/bin/bash
 
-    echo "[+] Moving Nerd Log in /var/log/"
-    mkdir -p /var/log/nerd && cp -r /var/lib/nerd/log/ /var/log/
+    [ "$(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null)" ]  \ 
+    && mkdir -p /var/log/nerd \
+    && cp -r /var/lib/nerd/log/* /var/log/nerd \ 
+    && echo "[+] Moving Nerd Log in /var/log/"
 
     echo "[+] Remove Nerd Structure"
     rm -rf /var/lib/nerd/
