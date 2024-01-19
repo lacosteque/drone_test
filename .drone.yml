@@ -36,7 +36,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache curl bash
-  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | bash
+  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | bash > /dev/null
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
 - name: make loki 
@@ -108,9 +108,9 @@ steps:
 
     if [ -z "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
       echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}"
-      docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/
+      docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null
       echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}"
-      docker plugin enable "loki-docker-driver:$${LOKI_VERSION}"
+      docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null
     fi
     
     exit 0
@@ -133,9 +133,9 @@ steps:
     
     if [ -n "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
       echo "[+] Disabling plugin loki-docker-driver:$${LOKI_VERSION}" 
-      docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force 
+      docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force > /dev/null
       echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}"
-      docker plugin rm "loki-docker-driver:$${LOKI_VERSION}"
+      docker plugin rm "loki-docker-driver:$${LOKI_VERSION}" > /dev/null
     fi
     
     exit 0
