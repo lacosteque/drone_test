@@ -101,7 +101,9 @@ steps:
     mkdir -p /var/lib/nerd/plugins/loki-driver
     chmod -R 0755 /var/lib/nerd/
 
-    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver
+    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver && \
+    docker plugin create "loki-docker-driver:$${LOKI_VERSION}" && \
+    docker plugin enable "loki-docker-driver:$${LOKI_VERSION}"
 
     exit 0
     EOF
