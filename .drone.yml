@@ -133,7 +133,7 @@ steps:
     echo "[+] Remove Loki Driver Archive"
     rm -rf /usr/share/loki-driver/
 
-    if [ -n "$(docker plugin ls | grep loki-docker-driver:$${LOKI_VERSION})" ]; then
+    if [ -n "$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION} " ]; then
       echo "[+] Disabling plugin loki-docker-driver:$${LOKI_VERSION}" 
       docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force && \
       echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}" && \
