@@ -122,7 +122,7 @@ steps:
     #!/bin/bash
 
     echo "[+] Moving Nerd Log in /var/log/"
-    mkdir -r /var/log/nerd && cp -r /var/lib/nerd/log/ /var/log/
+    mkdir -p /var/log/nerd && cp -r /var/lib/nerd/log/ /var/log/
 
     echo "[+] Remove Nerd Structure"
     rm -rf /var/lib/nerd/
