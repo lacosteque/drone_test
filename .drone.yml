@@ -151,7 +151,7 @@ steps:
         apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
-  - PACKAGE_PATH="/temp/$${NAME}-$${VERSION}.$${ARCH}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/temp/$${NAME}-$${VERSION}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
