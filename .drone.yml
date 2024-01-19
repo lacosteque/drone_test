@@ -46,29 +46,25 @@ steps:
     path: /src
   - name: temp
     path: /temp
-  - name: docker
-    path: /usr/bin/docker
   - name: docker-socket
     path: /var/run/docker.sock
   - name: docker-plugins
     path: /plugins
   privileged: true
   commands:
-  #- apk add --update --no-cache docker jq
-  - apk add --update --no-cache jq
+  - apk add --update --no-cache docker jq
   - | 
-    if [ -z "$(/usr/bin/docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
+    if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
       docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
       echo "[!] Loki docker driver $${LOKI_VERSION} not found. Make install" | tee -a "$${LOG}"
     fi
     
   - | 
-    LOKI_ID=$(/usr/bin/docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
+    LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
       if [ -n "$${LOKI_ID}" ]; then
-        INSPECT_RESULT=$(/usr/bin/docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
+        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
-        cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" .
-        rm -f rootfs/var/run
+        cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" . && rm -f rootfs/var/run
         cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
         mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
       else
