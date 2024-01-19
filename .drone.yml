@@ -105,10 +105,10 @@ steps:
     echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/
 
-    if [ -z '\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})' ]; then
-      echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}" && \
-      docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/ && \
-      echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}" && \
+    if [ -z "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
+      echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}"
+      docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/
+      echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}"
       docker plugin enable "loki-docker-driver:$${LOKI_VERSION}"
     fi
     
@@ -132,8 +132,8 @@ steps:
     
     if [ -n "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
       echo "[+] Disabling plugin loki-docker-driver:$${LOKI_VERSION}" 
-      docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force && \
-      echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}" && \
+      docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force 
+      echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}"
       docker plugin rm "loki-docker-driver:$${LOKI_VERSION}"
     fi
     
