@@ -105,7 +105,7 @@ steps:
     echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/
 
-    if [ -z '\$(docker plugin ls | grep -E "[^/]loki-docker-driver:$${LOKI_VERSION}")' ]; then
+    if [ -z '\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})' ]; then
       echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}" && \
       docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/ && \
       echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}" && \
@@ -119,7 +119,7 @@ steps:
 
     #!/bin/bash
 
-    if [[ -n $(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]]; then  
+    if [[ -n \$(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]]; then  
       mkdir -p /var/log/nerd
       cp -r /var/lib/nerd/log/* /var/log/nerd
       echo "[+] Moving Nerd Log in /var/log/"
@@ -131,7 +131,7 @@ steps:
     echo "[+] Remove Loki Driver Archive"
     rm -rf /usr/share/loki-driver/
     
-    if [ -n "\$(docker plugin ls | grep -E '[^/]loki-docker-driver:$${LOKI_VERSION}')" ]; then
+    if [ -n "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
       echo "[+] Disabling plugin loki-docker-driver:$${LOKI_VERSION}" 
       docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force && \
       echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}" && \
