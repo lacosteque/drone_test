@@ -100,8 +100,8 @@ steps:
     mkdir -p /var/lib/nerd/plugins/loki-driver
     chmod -R 0755 /var/lib/nerd/
 
-    chown +x /usr/bin/nerd
-    chown +x /usr/bin/nerdmicro
+    echo "[+] Make Execute Nerd & Nerdmicro"
+    chmod +x /usr/bin/nerd && chmod +x /usr/bin/nerdmicro
 
     echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/
