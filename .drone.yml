@@ -119,7 +119,7 @@ steps:
 
     #!/bin/bash
 
-    if [[ -n \$(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]]; then  
+    if [ -n \$(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]; then  
       mkdir -p /var/log/nerd
       cp -r /var/lib/nerd/log/* /var/log/nerd
       echo "[+] Moving Nerd Log in /var/log/"
