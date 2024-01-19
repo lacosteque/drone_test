@@ -107,8 +107,7 @@ steps:
     echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/
 
-    echo "$(docker plugin ls | grep loki-docker-driver:$${LOKI_VERSION})"
-    echo $${LOKI_VERSION}
+    docker plugin ls | grep "loki-docker-driver:$${LOKI_VERSION}"
 
     if [ -z "$(docker plugin ls | grep loki-docker-driver:$${LOKI_VERSION})" ]; then
       echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}" && \
