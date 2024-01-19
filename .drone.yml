@@ -90,7 +90,7 @@ steps:
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
-    cat << EOF > after-install.sh
+    cat << 'EOF' > after-install.sh
 
     #!/bin/bash
 
@@ -115,11 +115,11 @@ steps:
     exit 0
     EOF
 
-    cat << EOF > after-remove.sh
+    cat << 'EOF' > after-remove.sh
 
     #!/bin/bash
 
-    if [[ -n \$(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]]; then  
+    if [[ -n $(find /var/lib/nerd/log/ -mindepth 1 -print -quit 2>/dev/null) ]]; then  
       mkdir -p /var/log/nerd
       cp -r /var/lib/nerd/log/* /var/log/nerd
       echo "[+] Moving Nerd Log in /var/log/"
