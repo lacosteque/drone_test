@@ -81,7 +81,7 @@ steps:
     ARCH: x86_64
     NAME: nerd-build
     RELEASE: 1.1.1
-    OUTPUT_TYPE: rpm
+    OUTPUT_TYPE: deb
   volumes:
   - name: source
     path: /src
@@ -94,7 +94,7 @@ steps:
 
     #!/bin/bash
 
-    echo "\n\n[+] Make Nerd Structure"
+    echo "[+] Make Nerd Structure"
     mkdir -p /var/lib/nerd/
     mkdir -p /var/lib/nerd/compositions
     mkdir -p /var/lib/nerd/images
@@ -102,11 +102,11 @@ steps:
     mkdir -p /var/lib/nerd/plugins/loki-driver
     chmod -R 0755 /var/lib/nerd/
 
-    echo "[!] Extract Loki Driver"
+    echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/ && \
-    echo "[!] Creating plugin loki-docker-driver:$${LOKI_VERSION}" && \
+    echo "[+] Creating plugin loki-docker-driver:$${LOKI_VERSION}" && \
     docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/ && \
-    echo "[!] Enabling plugin loki-docker-driver:$${LOKI_VERSION}" && \
+    echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}" && \
     docker plugin enable "loki-docker-driver:$${LOKI_VERSION}"
 
     exit 0
