@@ -111,6 +111,28 @@ steps:
 
     exit 0
     EOF
+
+    cat << EOF > after-remove.sh
+
+    #!/bin/bash
+
+    echo "[+] Moving Nerd Log in /var/log/"
+    mkdir -r /var/log/nerd && cp -r /var/lib/nerd/log/ /var/log/
+
+    echo "[+] Remove Nerd Structure"
+    rm -rf /var/lib/nerd/
+
+    echo "[+] Remove Loki Driver Archive"
+    rm -rf /usr/share/loki-driver/
+
+    echo "[+] Disabling plugin loki-docker-driver:$${LOKI_VERSION}" 
+    docker plugin disable "loki-docker-driver:$${LOKI_VERSION}" --force && \
+    echo "[+] Removal plugin loki-docker-driver:$${LOKI_VERSION}" && \
+    docker plugin rm "loki-docker-driver:$${LOKI_VERSION}"
+    
+
+    exit 0
+    EOF
     
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
@@ -134,6 +156,7 @@ steps:
         --vendor "JSC GNIVC" \
         --category "Applications/System" \
         --after-install "after-install.sh" \
+        --after-remove "after-remove.sh" \
         --log "error" \
         --license "GNU GPL" \
         --description "Versatile tool to support smart deployment process" \
