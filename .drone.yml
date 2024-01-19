@@ -94,7 +94,7 @@ steps:
 
     #!/bin/bash
 
-    echo "Make Nerd Structure"
+    echo "/n/n [+] Make Nerd Structure"
     mkdir -p /var/lib/nerd/
     mkdir -p /var/lib/nerd/compositions
     mkdir -p /var/lib/nerd/images
@@ -102,9 +102,11 @@ steps:
     mkdir -p /var/lib/nerd/plugins/loki-driver
     chmod -R 0755 /var/lib/nerd/
 
-    echo "Extract Loki Driver"
+    echo "[+] Extract Loki Driver"
     tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/ && \
+    echo "[+] Create Loki Driver" && \
     docker plugin create "loki-docker-driver:$${LOKI_VERSION}"  /var/lib/nerd/plugins/loki-driver/ && \
+    echo "[+] Enabled Loki Driver" && \
     docker plugin enable "loki-docker-driver:$${LOKI_VERSION}"
 
     exit 0
