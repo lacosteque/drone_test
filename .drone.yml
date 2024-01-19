@@ -36,8 +36,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache curl bash
-  - curl -s --show-error https://getmic.ro | bash 
-  - mkdir -p /src/usr/bin/ && mv micro /src/usr/bin/nerdmicro
+  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | bash
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
 - name: make loki 
