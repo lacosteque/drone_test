@@ -21,9 +21,9 @@ steps:
   - mkdir image rootfs 
   - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:image
   - cat image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > confighash
-  - filename=$(cat confighash) && cat "image/$${filename}" > config.json
+  - cat "image/$(cat confighash)" > config.json
   - cat image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > layerhash
-  - filename=$(cat layerhash) && tar -xzf "image/$${filename}.gzip" rootfs
+  - tar -xzf "image/$(cat layerhash).gzip" rootfs
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
   
 
