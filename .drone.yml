@@ -15,9 +15,9 @@ steps:
   image: alpine:latest
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir foo
-  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:./
-  - cat manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > hash
+  - mkdir image
+  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:image
+  - cd image && cat manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > hash
   - cat hash > config.json
   - cat > config.json
   
