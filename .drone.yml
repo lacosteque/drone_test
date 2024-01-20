@@ -7,6 +7,8 @@ environment:
   PKG_PATH: "/temp/pkg_path.txt"
   LOG: "/temp/build.log"
   LOKI_VERSION: 2.7.0
+  ARCH: amd64
+  OS: linux
 
 
 steps:
@@ -14,8 +16,6 @@ steps:
 - name: build nerd
   image: alpine:3.15
   environment:
-    GOOS: linux
-    GOARCH: amd64
     CGO_ENABLED: 0
   volumes:
   - name: source
@@ -24,7 +24,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache go
-  - go build -o /src/usr/bin/nerd cmd/nerd.go
+  - env "GOARCH=$${ARCH}" "GOOS=$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
@@ -49,7 +49,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch amd64  --override-os linux dir:/temp/image
+  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
   - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
   - cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
   - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
@@ -61,8 +61,6 @@ steps:
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
-    #ARCH: x86_64
-    ARCH: amd64
     NAME: nerd-build
     RELEASE: 1.1.1
     OUTPUT_TYPE: deb
