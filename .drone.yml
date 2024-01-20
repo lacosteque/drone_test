@@ -25,7 +25,7 @@ steps:
   - cat image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > layerhash
   - ls -l .
   - ls -l image
-  - tar -xzf "image/$(cat layerhash).gzip" -C rootfs
+  - tar -xzf "image/$(cat layerhash)" -C rootfs
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
   
 
