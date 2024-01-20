@@ -11,6 +11,12 @@ environment:
 
 steps:
 
+- name: build docker
+  image: plugins/docker
+  commands:
+  - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
+  - docker plugin ls
+
 - name: build nerd
   image: alpine:3.15
   environment:
@@ -196,7 +202,7 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}" -d 1d
+  - supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}" -d 1d
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
