@@ -18,8 +18,8 @@ steps:
     path: /src
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir -p image/rootfs && cd image
-  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:image
+  - mkdir -p image/rootfs 
+  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:image && cd image
   - cat manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > confighash
   - filename=$(cat confighash) && cat "$${filename}" > config.json
   - cat manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > layerhash
