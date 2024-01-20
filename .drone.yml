@@ -269,7 +269,7 @@ services:
   privileged: true
   volumes:
   - name: dockersock
-    path: /var/run
+    path: /var/run/docker.sock
 
 
 volumes:
