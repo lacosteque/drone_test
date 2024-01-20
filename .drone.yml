@@ -258,10 +258,6 @@ volumes:
 - name: temp
   temp: {}
 
-- name: docker
-  host:
-    path: /usr/bin/docker
-
 - name: docker-socket
   host:
     path: /var/run/docker.sock
