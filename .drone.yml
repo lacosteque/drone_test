@@ -22,9 +22,9 @@ steps:
   - apk add --update --no-cache skopeo jq
   - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-os linux dir:/temp/image
   - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-  - cat "/temp/image/$(cat hash.txt)" > /temp/config.json
+  - cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
   - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-  - mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat hash.txt)" -C /temp/rootfs
+  - mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
 
 - name: build nerd
