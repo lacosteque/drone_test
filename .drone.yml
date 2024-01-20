@@ -11,22 +11,6 @@ environment:
 
 steps:
 
-- name: test
-  image: alpine:latest
-  volumes:
-  - name: source
-    path: /src
-  - name: temp
-    path: /temp
-  commands:
-  - apk add --update --no-cache skopeo jq
-  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-os linux dir:/temp/image
-  - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-  - cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
-  - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-  - mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
-  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
-
 - name: build nerd
   image: alpine:3.15
   environment:
@@ -36,7 +20,7 @@ steps:
   volumes:
   - name: source
     path: /src
-  - name: temp
+  - name: tmp
     path: /temp
   commands:
   - apk add --update --no-cache go
@@ -48,7 +32,7 @@ steps:
   volumes:
   - name: source
     path: /src
-  - name: temp
+  - name: tmp
     path: /temp
   commands:
   - apk add --update --no-cache curl bash
@@ -61,32 +45,17 @@ steps:
   volumes:
   - name: source
     path: /src
-  - name: temp
+  - name: tmp
     path: /temp
-  - name: docker-socket
-    path: /var/run/docker.sock
-  - name: docker-plugins
-    path: /plugins
   privileged: true
   commands:
-  - apk add --update --no-cache docker jq
-  - | 
-    if [ -z "$(docker plugin ls | grep grafana/loki-docker-driver:$${VERSION})" ]; then
-      docker plugin install "grafana/loki-docker-driver:$${VERSION}" --grant-all-permissions
-      echo "[!] Loki docker driver $${LOKI_VERSION} not found. Make install" | tee -a "$${LOG}"
-    fi
-    
-  - | 
-    LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
-      if [ -n "$${LOKI_ID}" ]; then
-        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
-        LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
-        cp -r "/plugins/$${LOKI_PLUGIN_ID}/rootfs" . && rm -f rootfs/var/run
-        cat "/plugins/$${LOKI_PLUGIN_ID}/config.json" | jq .plugin.Config > config.json
-        #mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" rootfs config.json
-      else
-        echo "[!] Loki Logging Driver ID not found." | tee -a "$${LOG}" && exit 1
-      fi
+  - apk add --update --no-cache skopeo jq
+  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-os linux dir:/temp/image
+  - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
+  - cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
+  - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
+  - mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
+  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
 
 - name: make pkg
@@ -100,7 +69,7 @@ steps:
   volumes:
   - name: source
     path: /src
-  - name: temp
+  - name: tmp
     path: /temp
   commands:
   - apk add --no-cache ruby tzdata && gem install fpm
@@ -202,7 +171,7 @@ steps:
     LOGIN:
       from_secret: minio_login
   volumes:
-  - name: temp
+  - name: tmp
     path: /temp
   commands:
   - apk add --no-cache curl bash 
@@ -233,7 +202,7 @@ steps:
     TO: -1001184051909
     MESSAGE_THREAD_ID: 4392 # "Сервисные уведомления"
   volumes:
-  - name: temp
+  - name: tmp
     path: /temp
   commands:
   - apk add --update --no-cache curl jq bash
@@ -272,13 +241,5 @@ volumes:
 - name: source
   temp: {}
 
-- name: temp
+- name: tmp
   temp: {}
-
-- name: docker-socket
-  host:
-    path: /var/run/docker.sock
-
-- name: docker-plugins
-  host:
-    path: /var/lib/docker/plugins/
