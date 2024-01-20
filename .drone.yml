@@ -7,7 +7,6 @@ environment:
   PKG_PATH: "/temp/pkg_path.txt"
   LOG: "/temp/build.log"
   LOKI_VERSION: 2.7.0
-  arch
 
 
 steps:
