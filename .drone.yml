@@ -11,12 +11,14 @@ environment:
 
 steps:
 
-- name: build docker
-  image: plugins/docker
-  privileged: true
-  settings:
-    debug: true
+- name: test
+  image: docker:dind
+  volumes:
+  - name: dockersock
+    path: /var/run
   commands:
+  - sleep 5 # give docker enough time to start
+  - docker ps -a
   - docker plugin install grafana/loki-docker-driver:2.7.0
   - docker plugin ls
 
@@ -260,7 +262,19 @@ steps:
     - success
     - failure
 
+services:
+- name: docker
+  image: docker:dind
+  privileged: true
+  volumes:
+  - name: dockersock
+    path: /var/run
+
+
 volumes:
+- name: dockersock
+  temp: {}
+  
 - name: source
   temp: {}
 
