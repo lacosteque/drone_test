@@ -20,14 +20,12 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir /temp/image
-  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:/temp/image
+  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-os linux dir:/temp/image
   - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/confighash
-  - cat "/temp/$(cat confighash)" > /temp/config.json
+  - cat "/temp/image/$(cat confighash)" > /temp/config.json
   - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/layerhash
-  - mkdir /temp/rootfs && tar -xzf "/temp/$(cat layerhash)" -C /temp/rootfs
-  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp /temp/rootfs /temp/config.json
-  
+  - mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat layerhash)" -C /temp/rootfs
+  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
 
 - name: build nerd
   image: alpine:3.15
