@@ -14,9 +14,13 @@ steps:
 - name: test
   image: alpine:latest
   commands:
-  - apk add --update --no-cache skopeo
+  - apk add --update --no-cache skopeo jq
   - mkdir foo
-  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:./foo
+  - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:./
+  - cat manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > hash
+  - cat hash > config.json
+  - cat > config.json
+  
 
 - name: build nerd
   image: alpine:3.15
@@ -258,18 +262,7 @@ steps:
     - success
     - failure
 
-services:
-- name: docker
-  image: docker:dind
-  privileged: true
-  volumes:
-  - name: dockersock
-    path: /var/run
-
-
 volumes:
-- name: dockersock
-  temp: {}
   
 - name: source
   temp: {}
