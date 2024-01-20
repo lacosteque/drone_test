@@ -25,7 +25,8 @@ steps:
       if [ -n "$${LOKI_ID}" ]; then
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
-        cat "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/plugins.moby//$${LOKI_PLUGIN_ID}/config.json" 
+        find / -name "$${LOKI_PLUGIN_ID}" -type d
+        #cat "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/plugins.moby/$${LOKI_PLUGIN_ID}/config.json" 
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${LOG}" && exit 1
       fi
