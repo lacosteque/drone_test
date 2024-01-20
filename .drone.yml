@@ -25,7 +25,7 @@ steps:
   commands:
   - apk add --update --no-cache go
   - env "GOARCH=$${ARCH}" "GOOS=$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
-  - echo "[done] - $${DRONE_STEP_NAME} - $${GOOS} - $${GOARCH}" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - ${ARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
   image: alpine:3.15
