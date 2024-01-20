@@ -14,7 +14,7 @@ steps:
 - name: build docker
   image: plugins/docker
   commands:
-  - docker plugin install "grafana/loki-docker-driver:$${VERSION}"
+  - docker plugin install grafana/loki-docker-driver:2.7.0
   - docker plugin ls
 
 - name: build nerd
