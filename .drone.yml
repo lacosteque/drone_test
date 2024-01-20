@@ -7,6 +7,7 @@ environment:
   PKG_PATH: "/temp/pkg_path.txt"
   LOG: "/temp/build.log"
   LOKI_VERSION: 2.7.0
+  arch
 
 
 steps:
@@ -47,10 +48,9 @@ steps:
     path: /src
   - name: tmp
     path: /temp
-  privileged: true
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-os linux dir:/temp/image
+  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch amd64  --override-os linux dir:/temp/image
   - cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
   - cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
   - cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
@@ -62,7 +62,8 @@ steps:
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
-    ARCH: x86_64
+    #ARCH: x86_64
+    ARCH: amd64
     NAME: nerd-build
     RELEASE: 1.1.1
     OUTPUT_TYPE: deb
