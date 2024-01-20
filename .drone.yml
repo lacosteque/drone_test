@@ -13,6 +13,7 @@ steps:
 
 - name: build docker
   image: plugins/docker
+  privileged: true
   commands:
   - docker plugin install grafana/loki-docker-driver:2.7.0
   - docker plugin ls
