@@ -18,7 +18,7 @@ steps:
     path: /src
   commands:
   - apk add --update --no-cache skopeo jq
-  - mkdir image && mkdir temp/rootfs 
+  - mkdir image && mkdir -p temp/rootfs 
   - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:image
   - cat image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > confighash
   - cat "image/$(cat confighash)" > temp/config.json
