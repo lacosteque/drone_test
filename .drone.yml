@@ -12,12 +12,12 @@ environment:
 steps:
 
 - name: test
-  image: docker:dind
+  image: alpine:latest
   volumes:
   - name: dockersock
     path: /var/run
   commands:
-  - apk add --update --no-cache jq
+  - apk add --update --no-cache jq docker
   - sleep 7 # give docker enough time to start
   - docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
   - find / -type f -name 'config.json'
