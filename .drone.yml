@@ -18,8 +18,7 @@ steps:
     path: /var/run
   commands:
   - sleep 7 # give docker enough time to start
-  - docker ps -a
-  - docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
+  #- docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
   - docker plugin ls
   - ls -l /var/lib/docker/
   - find / -name 'rootfs' -type d
