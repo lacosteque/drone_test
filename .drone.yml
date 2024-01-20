@@ -21,7 +21,7 @@ steps:
   - docker ps -a
   - docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
   - docker plugin ls
-  - ls -l /var/lib/
+  - ls -l /var/lib/docker/
 
 - name: build nerd
   image: alpine:3.15
