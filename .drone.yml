@@ -21,7 +21,7 @@ steps:
   - sleep 7 # give docker enough time to start
   - docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
   - find / -type f -name 'config.json'
-  - find / -type f -name '*loki*'
+  - find / -name 'loki*'
   - | 
     LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
       if [ -n "$${LOKI_ID}" ]; then
