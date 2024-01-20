@@ -15,7 +15,7 @@ steps:
   image: docker:dind
   volumes:
   - name: dockersock
-    path: /var/run/docker.sock
+    path: /varz/run
   commands:
   - sleep 5 # give docker enough time to start
   - docker ps -a
@@ -269,7 +269,7 @@ services:
   privileged: true
   volumes:
   - name: dockersock
-    path: /var/run/docker.sock
+    path: /varz/run
 
 
 volumes:
