@@ -18,10 +18,16 @@ steps:
     path: /var/run
   commands:
   - sleep 7 # give docker enough time to start
-  #- docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
-  - docker plugin ls
-  - ls -l /var/lib/docker/
-  - find / -name 'rootfs' -type d
+  - docker plugin install grafana/loki-docker-driver:2.7.0 --grant-all-permissions
+  - | 
+    LOKI_ID=$(docker plugin ls | grep "grafana/loki-docker-driver:$${LOKI_VERSION}" | awk '{print $1}')
+      if [ -n "$${LOKI_ID}" ]; then
+        INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
+        LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
+        cat "/run/docker/containerd/daemon/io.containerd.runtime.v2.task/plugins.moby//$${LOKI_PLUGIN_ID}/config.json" 
+      else
+        echo "[!] Loki Logging Driver ID not found." | tee -a "$${LOG}" && exit 1
+      fi
 
 - name: build nerd
   image: alpine:3.15
