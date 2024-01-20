@@ -28,6 +28,7 @@ steps:
         INSPECT_RESULT=$(docker plugin inspect --format '{{json .}}' "$${LOKI_ID}")
         LOKI_PLUGIN_ID=$(echo "$${INSPECT_RESULT}" | jq -r '.Id')
         ls -l "/run/docker/plugins/$${LOKI_PLUGIN_ID}/"
+        cat "/run/docker/plugins/$${LOKI_PLUGIN_ID}/loki.sock"
         #cat "/run/docker/plugins/$${LOKI_PLUGIN_ID}/config.json" 
       else
         echo "[!] Loki Logging Driver ID not found." | tee -a "$${LOG}" && exit 1
