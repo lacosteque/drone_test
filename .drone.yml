@@ -14,7 +14,7 @@ steps:
 - name: test
   image: alpine:latest
   commands:
-  - apk add --update --no-cache scopeo
+  - apk add --update --no-cache skopeo
   - mkdir foo
   - skopeo copy docker://docker.io/grafana/loki-docker-driver:2.7.0 --override-os linux dir:./foo
 
