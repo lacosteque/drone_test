@@ -25,7 +25,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache go="$${GO_VERSION}"
-  - go env GOARCH="$${ARCH}" GOOS="$${OS}"  build -o /src/usr/bin/nerd cmd/nerd.go
+  - go env GOARCH="$${ARCH}" GOOS="$${OS}" build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
