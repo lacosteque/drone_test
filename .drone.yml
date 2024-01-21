@@ -18,6 +18,8 @@ steps:
   environment:
     CGO_ENABLED: 0
     GO_VERSION: 1.17.10-r0
+    GOARCH: "$${ARCH}"
+    GOOS: "$${OS}"
   volumes:
   - name: source
     path: /src
@@ -25,7 +27,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache go="$${GO_VERSION}"
-  - env "GOARCH=$${ARCH}" "GOOS=$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
+  - go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
