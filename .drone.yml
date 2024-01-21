@@ -32,14 +32,13 @@ steps:
   image: alpine:3.15
   environment:
     CURL_VERSION: 8.5.0-r0
-    BASH_VERSION: 5.1.16-r0
   volumes:
   - name: source
     path: /src
   - name: tmp
     path: /temp
   commands:
-  - apk add --update --no-cache curl="$${CURL_VERSION}" bash="$${BASH_VERSION}"
+  - apk add --update --no-cache curl="$${CURL_VERSION}"
   - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | sh
   - mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
