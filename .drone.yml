@@ -40,7 +40,7 @@ steps:
     path: /temp
   commands:
   - apk add --update --no-cache curl="$${CURL_VERSION}" bash="$${BASH_VERSION}"
-  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | bash
+  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | sh
   - mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
