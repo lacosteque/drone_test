@@ -193,8 +193,8 @@ steps:
   - apk add --no-cache minio-client="$${MC_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
-  - mc config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
-  - mc cp "$${FILE}" "$${ALIAS}/$${BUCKET_NAME}/$${FILENAME}"
+  - mcli config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
+  - mcli cp "$${FILE}" "$${ALIAS}/$${BUCKET_NAME}/$${FILENAME}"
 
   #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
   #- cp supload.sh /usr/local/bin/supload
