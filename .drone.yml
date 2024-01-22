@@ -24,7 +24,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --update --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
+  - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
   - go env GOARCH="$${ARCH}" GOOS="$${OS}" build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   
