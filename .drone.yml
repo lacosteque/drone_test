@@ -177,23 +177,32 @@ steps:
 - name: push storage
   image: alpine:3.15
   environment:
-    URL: http://10.250.26.8:9000
-    PASS:
-      from_secret: pass
-    LOGIN:
-      from_secret: minio_login
+    ENDPOINT: http://10.250.26.8:9000
+    MC_VERSION: 0.20231202.112410-r0
+    ACCESS_KEY:
+      from_secret: minio_access_key
+    SECRET_KEY: 
+      from_secret: minio_secret_key
+    BUCKET_NAME: nerd-builds
+    ALIAS: storage
+    
   volumes:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache curl bash 
-  - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  - cp supload.sh /usr/local/bin/supload
-  - chmod +x /usr/local/bin/supload
+  - apk add --no-cache minio-client="$${MC_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
+  - mc config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
+  - mc cp "$${FILE}" "$${ALIAS}/$${BUCKET_NAME}/$${FILENAME}"
 
-  - supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}" -d 1d
+  #- curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
+  #- cp supload.sh /usr/local/bin/supload
+  #- chmod +x /usr/local/bin/supload
+  #- FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
+  #- FILE=$(cat "$${PKG_PATH}") 
+
+   #- supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}" -d 1d
    #curl -v -X PUT -T keycloak-14.0.0.tar.gz \ 
    #-H "Date: $(date -R)" \
    #-H "Content-Type: application/octet-stream" \
