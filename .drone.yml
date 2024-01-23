@@ -183,7 +183,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache curl minio-client
+  - apk add --no-cache curl minio-client --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
   #- FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   #- FILE=$(cat "$${PKG_PATH}") 
   #- mcli config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
