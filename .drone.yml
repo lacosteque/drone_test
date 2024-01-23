@@ -83,7 +83,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache ruby="$${RUBY_VERSION}" tzdata="$${TZDATA_VERSION}" && gem install fpm -v "$${FPM_VERSION}"
+  - apk add --no-cache ruby="$${RUBY_VERSION}" tzdata && gem install fpm -v "$${FPM_VERSION}"
   - |
     cat << EOF > after-install.sh
 
