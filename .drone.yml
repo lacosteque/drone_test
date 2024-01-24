@@ -184,19 +184,19 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache curl minio-client --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
+  - apk add --no-cache curl bash minio-client --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
   #- FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   #- FILE=$(cat "$${PKG_PATH}") 
   #- mcli config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
   #- mcli cp "$${FILE}" "$${ALIAS}/$${BUCKET_NAME}/$${FILENAME}"
 
   - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  - cp supload.sh /usr/local/bin/supload
-  - chmod +x /usr/local/bin/supload
+  #- cp supload.sh /usr/local/bin/supload
+  #- chmod +x /usr/local/bin/supload
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - /usr/local/bin/supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}" -d 1d
+  - bash ./supload.sh -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
 
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
