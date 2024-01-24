@@ -78,7 +78,7 @@ steps:
     path: /temp
   commands:
   #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
-  - apk add --no-cache ruby="$${RUBY_VERSION}" tzdata && gem install fpm -v "$${FPM_VERSION}"
+  - apk add --no-cache ruby tzdata && gem install fpm
   - |
     cat << EOF > after-install.sh
 
@@ -196,7 +196,7 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - bash supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
+  - supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
 
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
