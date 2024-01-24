@@ -69,7 +69,7 @@ steps:
     TZ: Europe/Moscow
     NAME: nerd-build
     RELEASE: 1.1.1
-    OUTPUT_TYPE: deb
+    OUTPUT_TYPE: rpm
     FPM_VERSION: 1.15.1
   volumes:
   - name: source
