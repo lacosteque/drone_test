@@ -85,11 +85,11 @@ steps:
     #!/bin/bash
 
     echo "[+] Make Nerd Structure"
-    [ -d /var/lib/nerd ] && echo "/var/lib/nerd существует" || mkdir -p /var/lib/nerd/
-    [ -d /var/lib/nerd/compositions ] && echo "/var/lib/nerd/compositions существует" || mkdir -p /var/lib/nerd/compositions
-    [ -d /var/lib/nerd/images ] && echo "/var/lib/nerd/images существует" || mkdir -p /var/lib/nerd/images
-    [ -d /var/lib/nerd/log ] && echo "/var/lib/nerd/log существует" || mkdir -p mkdir -p /var/lib/nerd/log
-    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "/var/lib/nerd/plugins/loki-driver существует" || mkdir -p /var/lib/nerd/plugins/loki-driver
+    [ -d /var/lib/nerd ] && echo "[exists] /var/lib/nerd" || mkdir -p /var/lib/nerd/ && echo "[done] /var/lib/nerd"
+    [ -d /var/lib/nerd/compositions ] && echo "[exists] /var/lib/nerd/compositions" || mkdir -p /var/lib/nerd/compositions && echo "[done] /var/lib/nerd/compositions"
+    [ -d /var/lib/nerd/images ] && echo "[exists] /var/lib/nerd/images" || mkdir -p /var/lib/nerd/images && echo "[done] /var/lib/nerd/images"
+    [ -d /var/lib/nerd/log ] && echo "[exists] /var/lib/nerd/log" || mkdir -p mkdir -p /var/lib/nerd/log && echo "[done] /var/lib/nerd/log"
+    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "/var/lib/nerd/plugins/loki-driver" || mkdir -p /var/lib/nerd/plugins/loki-driver && echo "[done] /var/lib/nerd/plugins/loki-driver"
     
     chmod -R 0755 /var/lib/nerd/
 
@@ -104,6 +104,10 @@ steps:
       docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null
       echo "[+] Enabling plugin loki-docker-driver:$${LOKI_VERSION}"
       docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null
+
+    else
+      echo "[!] Plugin loki-docker-driver:$${LOKI_VERSION} is found" 
+      
     fi
     
     exit 0
