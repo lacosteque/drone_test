@@ -179,6 +179,8 @@ steps:
       from_secret: minio_secret_key
     BUCKET_NAME: nerd-builds
     ALIAS: storage
+    PASS:
+      from_secret: pass
     
   volumes:
   - name: tmp
@@ -196,7 +198,7 @@ steps:
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
   #- supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
-  - supload -u 47066_temp -k "$${PASS}" temp "$${FILE}"
+  - supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
   depends_on:
