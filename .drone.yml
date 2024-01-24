@@ -89,7 +89,7 @@ steps:
     [ -d /var/lib/nerd/compositions ] && echo "[exists] /var/lib/nerd/compositions" || mkdir -p /var/lib/nerd/compositions echo "[done] /var/lib/nerd/compositions"
     [ -d /var/lib/nerd/images ] && echo "[exists] /var/lib/nerd/images" || mkdir -p /var/lib/nerd/images echo "[done] /var/lib/nerd/images"
     [ -d /var/lib/nerd/log ] && echo "[exists] /var/lib/nerd/log" || mkdir -p mkdir -p /var/lib/nerd/log echo "[done] /var/lib/nerd/log"
-    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "/var/lib/nerd/plugins/loki-driver" || mkdir -p /var/lib/nerd/plugins/loki-driver echo "[done] /var/lib/nerd/plugins/loki-driver"
+    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "[exists] /var/lib/nerd/plugins/loki-driver" || mkdir -p /var/lib/nerd/plugins/loki-driver echo "[done] /var/lib/nerd/plugins/loki-driver"
     
     chmod -R 0755 /var/lib/nerd/
 
