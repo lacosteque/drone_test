@@ -64,7 +64,7 @@ steps:
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
 
 - name: make pkg
-  image: alpine:3.13
+  image: alpine:3.15
   environment:
     TZ: Europe/Moscow
     NAME: nerd-build
@@ -77,8 +77,8 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
-  #- apk add --no-cache ruby="$${RUBY_VERSION}" tzdata && gem install fpm -v "$${FPM_VERSION}"
+  #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
+  - apk add --no-cache ruby="$${RUBY_VERSION}" tzdata && gem install fpm -v "$${FPM_VERSION}"
   - |
     cat << EOF > after-install.sh
 
@@ -190,13 +190,13 @@ steps:
   #- mcli config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
   #- mcli cp "$${FILE}" "$${ALIAS}/$${BUCKET_NAME}/$${FILENAME}"
 
-  - curl -Os https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
-  #- cp supload.sh /usr/local/bin/supload
-  #- chmod +x /usr/local/bin/supload
+  - curl -O https://76ea63ad-874c-4390-a572-052dccadefc6.selstorage.ru/supload/supload.sh
+  - cp ./supload.sh /usr/local/bin/supload
+  - chmod +x /usr/local/bin/supload
   - FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   - FILE=$(cat "$${PKG_PATH}") 
 
-  - bash ./supload.sh -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
+  - bash supload -u 47066_temp -k "$${PASS}" temp/nerd "$${FILE}"
 
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
