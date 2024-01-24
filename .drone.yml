@@ -85,10 +85,10 @@ steps:
     #!/bin/bash
 
     echo "[+] Make Nerd Structure"
-    [ -d /var/lib/nerd/ ] && echo "/var/lib/nerd/ существует" || mkdir -p /var/lib/nerd/
-    [ -d /var/lib/nerd/compositions ] && echo "mkdir -p /var/lib/nerd/compositions существует" || mkdir -p /var/lib/nerd/compositions
-    [ -d /var/lib/nerd/images ] && echo "mkdir -p /var/lib/nerd/images существует" || mkdir -p /var/lib/nerd/images
-    [ -d /var/lib/nerd/log ] && echo "mkdir -p /var/lib/nerd/log существует" || mkdir -p mkdir -p /var/lib/nerd/log
+    [ -d /var/lib/nerd ] && echo "/var/lib/nerd существует" || mkdir -p /var/lib/nerd/
+    [ -d /var/lib/nerd/compositions ] && echo "/var/lib/nerd/compositions существует" || mkdir -p /var/lib/nerd/compositions
+    [ -d /var/lib/nerd/images ] && echo "/var/lib/nerd/images существует" || mkdir -p /var/lib/nerd/images
+    [ -d /var/lib/nerd/log ] && echo "/var/lib/nerd/log существует" || mkdir -p mkdir -p /var/lib/nerd/log
     [ -d /var/lib/nerd/plugins/loki-driver ] && echo "/var/lib/nerd/plugins/loki-driver существует" || mkdir -p /var/lib/nerd/plugins/loki-driver
     
     chmod -R 0755 /var/lib/nerd/
