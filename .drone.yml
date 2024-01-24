@@ -25,7 +25,7 @@ steps:
     path: /temp
   commands:
   - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
-  - go env GOARCH="$${ARCH}" GOOS="$${OS}" build -o /src/usr/bin/nerd cmd/nerd.go
+  - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
