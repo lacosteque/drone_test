@@ -70,7 +70,7 @@ steps:
     TZ: Europe/Moscow
     NAME: nerd-build
     RELEASE: 1.1.1
-    OUTPUT_TYPE: rpm
+    OUTPUT_TYPE: deb
     FPM_VERSION: 1.15.1
   volumes:
   - name: source
@@ -105,13 +105,13 @@ steps:
 
       echo "[*] Plugin loki-docker-driver:$${LOKI_VERSION} not found." 
       
-      echo "*** Extract ***"
+      echo "** Unzip **"
       tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/ && echo "[+] The driver is unpacked in /var/lib/nerd/plugins/loki-driver/"
       
-      echo "*** Creating plugin loki-docker-driver:$${LOKI_VERSION} ***"
+      echo "** Creating plugin loki-docker-driver:$${LOKI_VERSION} **"
       docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null && echo "[+] The plugin has been created."
       
-      echo "*** Enabling plugin loki-docker-driver:$${LOKI_VERSION} ***"
+      echo "** Enabling plugin loki-docker-driver:$${LOKI_VERSION} **"
       docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null && echo "[+] The plugin is enabled."
 
     else
