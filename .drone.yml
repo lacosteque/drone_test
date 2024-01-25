@@ -223,6 +223,8 @@ steps:
     status:
     - success
     - failure
+    branch:
+    - develop
 
 volumes:
   
