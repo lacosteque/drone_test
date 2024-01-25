@@ -60,6 +60,7 @@ steps:
   - | 
     cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
     mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
+  - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
 
@@ -79,7 +80,7 @@ steps:
   commands:
   #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
   - apk add --no-cache ruby tzdata && gem install fpm
- - |
+  - |
     cat << EOF > after-install.sh
 
     #!/bin/bash
