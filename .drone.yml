@@ -105,13 +105,11 @@ steps:
 
       echo "[*] Plugin loki-docker-driver:$${LOKI_VERSION} not found."
 
-      LOKI_ROOT="/var/lib/nerd/plugins/loki-driver/"
-      
       echo "** Unzip **"
-      tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C "$${LOKI_ROOT}" && echo "[+] The driver is unpacked in $${LOKI_ROOT}"
+      tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/ && echo "[+] The driver is unpacked in /var/lib/nerd/plugins/loki-driver/"
       
       echo "** Creating plugin loki-docker-driver:$${LOKI_VERSION} **"
-      docker plugin create "loki-docker-driver:$${LOKI_VERSION}" "$${LOKI_ROOT}" > /dev/null && echo "[+] The plugin has been created."
+      docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null && echo "[+] The plugin has been created."
       
       echo "** Enabling plugin loki-docker-driver:$${LOKI_VERSION} **"
       docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null && echo "[+] The plugin is enabled."
