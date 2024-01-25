@@ -199,12 +199,13 @@ steps:
     [[ -f "$${LOG}" ]] && LOG=$(cat "$${LOG}")
     HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
     <b>Repo:</b> $${DRONE_REPO}
+    
     "    
   - | 
     OK=$(curl -s "https://api.telegram.org/bot$${TG_TOKEN}/sendMessage" \
         --data "chat_id=$${TO}" \
         --data "parse_mode=HTML" \
-        --data "text=$${HEADER}\n$${LOG}" | jq '.ok')  
+        --data "text=$${HEADER}$${LOG}" | jq '.ok')  
   - |
     if [[ "$${OK}" == "false" ]]; then
       cat "$${LOG}" > "status_$${DRONE_BUILD_NUMBER}.log"
