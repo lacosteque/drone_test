@@ -79,39 +79,48 @@ steps:
   commands:
   #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
   - apk add --no-cache ruby tzdata && gem install fpm
-  - |
+ - |
     cat << EOF > after-install.sh
 
     #!/bin/bash
-
-    echo "[!] Make Nerd Structure"
-    [ -d /var/lib/nerd ] && echo "[*] /var/lib/nerd" || (mkdir -p /var/lib/nerd/ && echo "[+] /var/lib/nerd")
-    [ -d /var/lib/nerd/compositions ] && echo "[*] /var/lib/nerd/compositions" || (mkdir -p /var/lib/nerd/compositions && echo "[+] /var/lib/nerd/compositions")
-    [ -d /var/lib/nerd/images ] && echo "[*] /var/lib/nerd/images" || (mkdir -p /var/lib/nerd/images && echo "[+] /var/lib/nerd/images")
-    [ -d /var/lib/nerd/log ] && echo "[*] /var/lib/nerd/log" || (mkdir -p mkdir -p /var/lib/nerd/log && echo "[+] /var/lib/nerd/log")
-    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "[*] /var/lib/nerd/plugins/loki-driver" || (mkdir -p /var/lib/nerd/plugins/loki-driver && echo "[+] /var/lib/nerd/plugins/loki-driver")
     
-    chmod -R 0755 /var/lib/nerd/
+    echo "*** Make workings dirs ***"
+    [ -d /var/lib/nerd ] && echo "[*] /var/lib/nerd" || (mkdir -p /var/lib/nerd/ && echo "[+] >>>>> /var/lib/nerd")
+    [ -d /var/lib/nerd/log ] && echo "[*] /var/lib/nerd/log" || (mkdir -p mkdir -p /var/lib/nerd/log && echo "[+] >>>> /var/lib/nerd/log")
+    [ -d /var/lib/nerd/images ] && echo "[*] /var/lib/nerd/images" || (mkdir -p /var/lib/nerd/images && echo "[+] >>> /var/lib/nerd/images")
+    [ -d /var/lib/nerd/compositions ] && echo "[*] /var/lib/nerd/compositions" || (mkdir -p /var/lib/nerd/compositions && echo "[+] >> /var/lib/nerd/compositions")
+    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "[*] /var/lib/nerd/plugins/loki-driver" || (mkdir -p /var/lib/nerd/plugins/loki-driver && echo "[+] > /var/lib/nerd/plugins/loki-driver")
+    
+    chmod -R 0755 /var/lib/nerd/ && echo "[+] change mode 0755"
 
-    echo "[!] Make Execute Nerd & Nerdmicro"
-    chmod +x /usr/bin/nerd && chmod +x /usr/bin/nerdmicro
+    echo "*** Make execute Nerd & Nerdmicro ***"
+    chmod +x /usr/bin/nerd && echo "[+] Nerd" 
+    chmod +x /usr/bin/nerdmicro && echo "[+] NerdMicro"
+    
 
-    echo "[!] Extract Loki Driver"
-    tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/
+    echo "*** Workflow with Loki driver ***"
 
     if [ -z "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
-      echo "[!] Creating plugin loki-docker-driver:$${LOKI_VERSION}"
-      docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null
-      echo "[!] Enabling plugin loki-docker-driver:$${LOKI_VERSION}"
-      docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null
+
+      echo "[*] Plugin loki-docker-driver:$${LOKI_VERSION} not found." 
+      
+      echo "*** Extract ***"
+      tar -xzf "/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /var/lib/nerd/plugins/loki-driver/ && echo "[+] The driver is unpacked in /var/lib/nerd/plugins/loki-driver/"
+      
+      echo "*** Creating plugin loki-docker-driver:$${LOKI_VERSION} ***"
+      docker plugin create "loki-docker-driver:$${LOKI_VERSION}" /var/lib/nerd/plugins/loki-driver/ > /dev/null && echo "[+] The plugin has been created."
+      
+      echo "*** Enabling plugin loki-docker-driver:$${LOKI_VERSION} ***"
+      docker plugin enable "loki-docker-driver:$${LOKI_VERSION}" > /dev/null && echo "[+] The plugin is enabled."
 
     else
-      echo "[!] Plugin loki-docker-driver:$${LOKI_VERSION} is found" 
+      echo "[*] Plugin loki-docker-driver:$${LOKI_VERSION} is found." 
       
     fi
     
     exit 0
     EOF
+
     
   - |
     if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
