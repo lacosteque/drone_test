@@ -85,22 +85,22 @@ steps:
 
     #!/bin/bash
     
-    echo "*** Make workings dirs ***"
-    [ -d /var/lib/nerd ] && echo "[*] /var/lib/nerd" || (mkdir -p /var/lib/nerd/ && echo "[+] >>>>> /var/lib/nerd")
-    [ -d /var/lib/nerd/log ] && echo "[*] /var/lib/nerd/log" || (mkdir -p mkdir -p /var/lib/nerd/log && echo "[+] >>>> /var/lib/nerd/log")
-    [ -d /var/lib/nerd/images ] && echo "[*] /var/lib/nerd/images" || (mkdir -p /var/lib/nerd/images && echo "[+] >>> /var/lib/nerd/images")
-    [ -d /var/lib/nerd/compositions ] && echo "[*] /var/lib/nerd/compositions" || (mkdir -p /var/lib/nerd/compositions && echo "[+] >> /var/lib/nerd/compositions")
-    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "[*] /var/lib/nerd/plugins/loki-driver" || (mkdir -p /var/lib/nerd/plugins/loki-driver && echo "[+] > /var/lib/nerd/plugins/loki-driver")
+    echo "*** Workflow with dirs ***"
     
+    [ -d /var/lib/nerd ] && echo "[*] check > /var/lib/nerd" || (mkdir -p /var/lib/nerd/ && echo "[+] make > /var/lib/nerd")
+    [ -d /var/lib/nerd/log ] && echo "[*] check > /var/lib/nerd/log" || (mkdir -p mkdir -p /var/lib/nerd/log && echo "[+] make > /var/lib/nerd/log")
+    [ -d /var/lib/nerd/images ] && echo "[*] check > /var/lib/nerd/images" || (mkdir -p /var/lib/nerd/images && echo "[+] make > /var/lib/nerd/images")
+    [ -d /var/lib/nerd/compositions ] && echo "[*] check > /var/lib/nerd/compositions" || (mkdir -p /var/lib/nerd/compositions && echo "[+] make > /var/lib/nerd/compositions")
+    [ -d /var/lib/nerd/plugins/loki-driver ] && echo "[*] check > /var/lib/nerd/plugins/loki-driver" || (mkdir -p /var/lib/nerd/plugins/loki-driver && echo "[+] make > /var/lib/nerd/plugins/loki-driver")
     chmod -R 0755 /var/lib/nerd/ && echo "[+] change mode 0755"
 
-    echo "*** Make execute Nerd & Nerdmicro ***"
-    chmod +x /usr/bin/nerd && echo "[+] Nerd" 
-    chmod +x /usr/bin/nerdmicro && echo "[+] NerdMicro"
+    echo "*** Workflow with Nerd ***"
+    chmod +x /usr/bin/nerd && echo "[+] change mode +x" 
+
+    echo "*** Workflow with NerdMicro ***"
+    chmod +x /usr/bin/nerdmicro && echo "[+] change mode +x"
     
-
     echo "*** Workflow with Loki driver ***"
-
     if [ -z "\$(docker plugin ls | grep -E [^/]loki-docker-driver:$${LOKI_VERSION})" ]; then
 
       echo "[*] Plugin loki-docker-driver:$${LOKI_VERSION} not found."
