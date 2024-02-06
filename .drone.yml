@@ -26,8 +26,9 @@ steps:
     path: /temp
   commands:
   - apk add --no-cache git
-  - git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
-  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
+  - |
+    git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
+    grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
 
 - name: build nerd
   image: alpine:3.15
