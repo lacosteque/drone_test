@@ -5,13 +5,21 @@ name: default
 
 environment:
   PKG_PATH: "/temp/pkg_path.txt"
+  LOKI_VERSION_STORAGE: "/temp/loki.version"
+  NERD_VERSION_STORAGE: "/temp/nerg.version"
   LOG: "/temp/build.log"
-  LOKI_VERSION: 2.7.0
   ARCH: amd64
   OS: linux
 
 
 steps:
+
+- name: get versions
+  image: alpine:3.15
+  commands:
+  - apk add --no-cache git
+  - git describe --tags --abbrev=0 > $${NERD_VERSION_STORAGE}
+  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > $${LOKI_VERSION_STORAGE}
 
 - name: build nerd
   image: alpine:3.15
@@ -52,6 +60,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
+  - export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
   - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
   - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
   - |
@@ -69,8 +78,7 @@ steps:
   environment:
     TZ: Europe/Moscow
     NAME: nerd-build
-    RELEASE: 1.1.1
-    OUTPUT_TYPE: deb
+    OUTPUT_TYPE: rpm
     FPM_VERSION: 1.15.1
   volumes:
   - name: source
@@ -78,6 +86,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
+  - export RELEASE=$(cat $${NERD_VERSION_STORAGE}) && export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
   #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
   - apk add --no-cache ruby tzdata && gem install fpm
   - |
@@ -198,7 +207,6 @@ steps:
     TG_TOKEN:
       from_secret: tg_token
     TO: -1001184051909
-    MESSAGE_THREAD_ID: 4392 # "Сервисные уведомления"
   volumes:
   - name: tmp
     path: /temp
@@ -207,8 +215,9 @@ steps:
   - |
     [[ "$${DRONE_BUILD_STATUS}" == "success" ]] && MARK="✅" || MARK="❌"
     [[ -f "$${LOG}" ]] && LOG=$(cat "$${LOG}")
-    HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a>
+    HEADER="$${MARK} <a href=\"$DRONE_BUILD_LINK\">Build #$${DRONE_BUILD_NUMBER}</a> - <a href=\"$${DRONE_COMMIT_LINK}\">commit</a>
     <b>Repo:</b> $${DRONE_REPO}
+    
     
     "    
   - | 
