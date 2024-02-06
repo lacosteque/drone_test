@@ -24,6 +24,7 @@ steps:
   - |
     git fetch --tags && \
     git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
+  - echo "[done] - $${DRONE_STEP_NAME} - (cat $$${NERD_VERSION_STORAGE})" | tee -a "$${LOG}"
 
 - name: build nerd
   image: alpine:3.15
