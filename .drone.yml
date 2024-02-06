@@ -16,11 +16,18 @@ steps:
 
 - name: get versions
   image: alpine:3.15
+  environment:
+    CGO_ENABLED: 0
+    GO_VERSION: 1.19.9-r0
   volumes:
+  - name: source
+    path: /src
   - name: tmp
     path: /temp
   commands:
-  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
+  - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
+  - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
+  - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
 
 - name: build nerd
   image: alpine:3.15
