@@ -26,6 +26,16 @@ steps:
     git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
+- name: fetch loki version
+  image: alpine:3.15
+  volumes:
+  - name: tmp
+    path: /temp
+  commands:
+  - apk add --no-cache git
+  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}" 
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
+
 - name: build nerd
   image: alpine:3.15
   environment:
@@ -41,6 +51,8 @@ steps:
   - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
   - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  depends_on:
+  - fetch nerd version
   
 - name: make micro 
   image: alpine:3.15
@@ -66,9 +78,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - |
-    grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}" && \
-    export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
+  - export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
   - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
   - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
   - |
@@ -80,6 +90,8 @@ steps:
   - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  depends_on:
+  - fetch loki version
 
 - name: make pkg
   image: alpine:3.15
