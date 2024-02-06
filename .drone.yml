@@ -25,9 +25,9 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
-  - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
-  - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  - apk add --no-cache git
+  - git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
+  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
 
 - name: build nerd
   image: alpine:3.15
