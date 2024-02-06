@@ -24,7 +24,7 @@ steps:
   - |
     git fetch --tags && \
     git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
-  - echo "[done] - $${DRONE_STEP_NAME} - $(cat $${NERD_VERSION_STORAGE})" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
 
 - name: build nerd
   image: alpine:3.15
@@ -37,9 +37,10 @@ steps:
   - name: tmp
     path: /temp
   commands:
+  - export RELEASE=$(cat "$${NERD_VERSION_STORAGE}")
   - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
   - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
-  - echo "[done] - $${DRONE_STEP_NAME} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   
 - name: make micro 
   image: alpine:3.15
@@ -78,7 +79,7 @@ steps:
     mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
   - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
-  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
 
 - name: make pkg
   image: alpine:3.15
