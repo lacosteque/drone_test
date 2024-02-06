@@ -20,7 +20,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache git
+  - apk add --no-cache git && ls -l
   - |
     git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
     grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
