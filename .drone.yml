@@ -21,7 +21,8 @@ steps:
     path: /temp
   commands:
   - apk add --no-cache git
-  - git fetch --tags && git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
+  - git fetch --tags 
+  - git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
 
 - name: build nerd
   image: alpine:3.15
