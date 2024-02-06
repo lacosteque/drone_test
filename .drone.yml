@@ -64,7 +64,9 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}" && export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
+  - |
+    grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}" && \
+    export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
   - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
   - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
   - |
