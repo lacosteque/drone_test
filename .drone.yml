@@ -16,6 +16,9 @@ steps:
 
 - name: get versions
   image: alpine:3.15
+  volumes:
+  - name: tmp
+    path: /temp
   commands:
   - apk add --no-cache git
   - git describe --tags --abbrev=0 > $${NERD_VERSION_STORAGE}
