@@ -16,17 +16,10 @@ steps:
 
 - name: get versions
   image: alpine:3.15
-  environment:
-    CGO_ENABLED: 0
-    GO_VERSION: 1.19.9-r0
   volumes:
-  - name: source
-    path: /src
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache git
-  - git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
   - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
 
 - name: build nerd
