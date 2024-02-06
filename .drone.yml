@@ -14,18 +14,14 @@ environment:
 
 steps:
 
-- name: get versions
+- name: fetch nerd version
   image: alpine:3.15
   volumes:
   - name: tmp
     path: /temp
   commands:
   - apk add --no-cache git
-  - git fetch --tags 
-  - |
-    git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
-    grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}"
-  - cat "$${NERD_VERSION_STORAGE}" && cat "$${LOKI_VERSION_STORAGE}"
+  - git fetch --tags && git describe --tags --abbrev=0 > "$${NERD_VERSION_STORAGE}"
 
 - name: build nerd
   image: alpine:3.15
@@ -66,7 +62,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
+  - grep '#### Версия loki-docker-driver: ' README.md | awk '{print $NF}' > "$${LOKI_VERSION_STORAGE}" && export LOKI_VERSION=$(cat $${LOKI_VERSION_STORAGE})
   - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
   - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
   - |
@@ -78,8 +74,6 @@ steps:
   - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
-  depends_on:
-  - get versions
 
 - name: make pkg
   image: alpine:3.15
