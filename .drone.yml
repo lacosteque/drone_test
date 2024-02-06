@@ -4,9 +4,9 @@ name: default
 
 
 environment:
-  PKG_PATH: "/temp/pkg_path.txt"
   LOKI_VERSION_STORAGE: "/temp/loki.version"
   NERD_VERSION_STORAGE: "/temp/nerg.version"
+  PKG_PATH: "/temp/pkg.path"
   LOG: "/temp/build.log"
   ARCH: amd64
   OS: linux
@@ -185,7 +185,6 @@ steps:
   - make micro
   - make loki
   - build nerd
-  - fetch nerd version
 
 - name: push storage
   image: alpine:3.15
