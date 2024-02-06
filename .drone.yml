@@ -75,6 +75,8 @@ steps:
   - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
   - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
   - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION}" | tee -a "$${LOG}"
+  depends_on:
+  - get versions
 
 - name: make pkg
   image: alpine:3.15
