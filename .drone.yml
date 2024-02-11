@@ -67,9 +67,10 @@ steps:
   - export GOOS="$${OS}" GOARCH="$${ARCH}"
   - apk add --update --no-cache git go make
   - git clone https://github.com/zyedidia/micro.git && cd micro
+  - git describe --tags --abbrev=0 > "$${VERSION}"
   - make build
   - mv micro /src/usr/bin/nerdmicro
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
 
 - name: test nerdmicro 
   image: alpine:3.15
@@ -79,6 +80,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
+  - /src/usr/bin/nerdmicro -h
   - |
     /src/usr/bin/nerdmicro -h |  
     grep -qE "Usage\: micro \[OPTIONS\] \[FILE\]..." || 
