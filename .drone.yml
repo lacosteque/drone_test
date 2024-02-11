@@ -73,6 +73,22 @@ steps:
   - mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
 
+- name: test nerd 
+  image: alpine:3.15
+  volumes:
+  - name: source
+    path: /src
+  - name: tmp
+    path: /temp
+  commands:
+  - /src/usr/bin/nerd | grep -qE "NAME" || { echo "[fail] - $${DRONE_STEP_NAME} - NAME" | tee -a "$${LOG}"; exit 1; }
+  - /src/usr/bin/nerd | grep -qE "USAGE" || { echo "[fail] - $${DRONE_STEP_NAME} - USAGE" | tee -a "$${LOG}"; exit 1; }
+  - /src/usr/bin/nerd | grep -qE "COMMANDS" || { echo "[fail] - $${DRONE_STEP_NAME} - COMMANDS" | tee -a "$${LOG}"; exit 1; }
+  - /src/usr/bin/nerd | grep -qE "GLOBAL OPTIONS" || { echo "[fail] - $${DRONE_STEP_NAME} - GLOBAL OPTIONS" | tee -a "$${LOG}"; exit 1; }
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
+  depends_on:
+  - build nerd
+
 - name: test micro 
   image: alpine:3.15
   volumes:
@@ -202,8 +218,8 @@ steps:
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
   depends_on:
   - test micro
+  - test nerd
   - make loki
-  - build nerd
 
 - name: push storage
   image: alpine:3.15
