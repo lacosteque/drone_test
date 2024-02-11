@@ -81,8 +81,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - /src/usr/bin/nerdmicro -h
-  - cd /src/usr/bin && ./nerdmicro -h | grep -qE "Usage micro \[OPTIONS\] \[FILE\]..." || echo "Nerdmicro fail test!" | tee -a "$${LOG}" && exit 1
+  - /src/usr/bin/nerdmicro -h | grep -qE "Usage: micro \[OPTIONS\] \[FILE\]" || { echo "Nerdmicro fail test!" | tee -a "$${LOG}" && exit 1}
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
   - build nerdmicro
