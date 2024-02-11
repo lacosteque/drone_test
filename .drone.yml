@@ -41,15 +41,13 @@ steps:
   environment:
     CGO_ENABLED: 0
     GO_VERSION: 1.19.9-r0
-    GOARCH: "$${ARCH}"
-    GOOS: "$${OS}"
   volumes:
   - name: source
     path: /src
   - name: tmp
     path: /temp
   commands:
-  - export RELEASE=$(cat "$${NERD_VERSION_STORAGE}")
+  - export RELEASE=$(cat "$${NERD_VERSION_STORAGE}") GOOS="$${OS}" GOARCH="$${ARCH}"
   - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
   - mkdir -p /src/usr/bin/ && go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
@@ -60,14 +58,13 @@ steps:
   image: alpine:3.15
   environment:
     CGO_ENABLED: 0
-    GOARCH: "$${ARCH}"
-    GOOS: "$${OS}"
   volumes:
   - name: source
     path: /src
   - name: tmp
     path: /temp
   commands:
+  - export GOOS="$${OS}" GOARCH="$${ARCH}"
   - apk add --update --no-cache git go make
   - git clone https://github.com/zyedidia/micro.git && cd micro
   - make build
