@@ -41,6 +41,8 @@ steps:
   environment:
     CGO_ENABLED: 0
     GO_VERSION: 1.19.9-r0
+    GOARCH: "$${ARCH}"
+    GOOS: "$${OS}"
   volumes:
   - name: source
     path: /src
@@ -49,12 +51,30 @@ steps:
   commands:
   - export RELEASE=$(cat "$${NERD_VERSION_STORAGE}")
   - apk add --no-cache go="$${GO_VERSION}" --repository=https://dl-cdn.alpinelinux.org/alpine/v3.17/community
-  - mkdir -p /src/usr/bin/ && env GOARCH="$${ARCH}" GOOS="$${OS}" go build -o /src/usr/bin/nerd cmd/nerd.go
+  - mkdir -p /src/usr/bin/ && go build -o /src/usr/bin/nerd cmd/nerd.go
   - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
   depends_on:
   - fetch nerd version
   
-- name: make micro 
+- name: build nerdmicro 
+  image: alpine:3.15
+    environment:
+    CGO_ENABLED: 0
+    GOARCH: "$${ARCH}"
+    GOOS: "$${OS}"
+  volumes:
+  - name: source
+    path: /src
+  - name: tmp
+    path: /temp
+  commands:
+  - apk add --update --no-cache git go make
+  - git clone https://github.com/zyedidia/micro.git && cd micro
+  - make build
+  - mv micro /src/usr/bin/nerdmicro
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
+
+- name: test nerdmicro 
   image: alpine:3.15
   volumes:
   - name: source
@@ -62,11 +82,10 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --update --no-cache curl
-  - mkdir -p /src/usr/bin/ && curl -s --show-error https://getmic.ro | sh
-  - mv micro /src/usr/bin/nerdmicro
-  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
-
+  - /src/usr/bin/nerdmicro -h | grep -qE "Usage\: micro \[OPTIONS\] \[FILE\]..." || echo "Nerdmicro fail test!" | tee -a "$${LOG}" && exit 1
+  depends_on:
+  - build nerdmicro
+  
 - name: make loki 
   image: alpine:3.15
   environment:
@@ -182,7 +201,7 @@ steps:
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
   depends_on:
-  - make micro
+  - test nerdmicro
   - make loki
   - build nerd
 
