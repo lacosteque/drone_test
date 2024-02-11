@@ -54,7 +54,7 @@ steps:
   depends_on:
   - fetch nerd version
   
-- name: build nerdmicro 
+- name: build micro 
   image: alpine:3.15
   environment:
     CGO_ENABLED: 0
@@ -73,7 +73,7 @@ steps:
   - mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
 
-- name: test nerdmicro 
+- name: test micro 
   image: alpine:3.15
   volumes:
   - name: source
@@ -81,10 +81,10 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - /src/usr/bin/nerdmicro -h | grep -qE "Usagezzz\:\ micro \[OPTIONS\] \[FILE\]" || { echo "[fail] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"; exit 1; }
+  - /src/usr/bin/nerdmicro -h | grep -qE "Usage\:\ micro \[OPTIONS\] \[FILE\]" || { echo "[fail] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"; exit 1; }
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
-  - build nerdmicro
+  - build micro
   
 - name: make loki 
   image: alpine:3.15
@@ -201,7 +201,7 @@ steps:
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
   depends_on:
-  - test nerdmicro
+  - test micro
   - make loki
   - build nerd
 
