@@ -58,7 +58,7 @@ steps:
   
 - name: build nerdmicro 
   image: alpine:3.15
-    environment:
+  environment:
     CGO_ENABLED: 0
     GOARCH: "$${ARCH}"
     GOOS: "$${OS}"
@@ -83,6 +83,7 @@ steps:
     path: /temp
   commands:
   - /src/usr/bin/nerdmicro -h | grep -qE "Usage\: micro \[OPTIONS\] \[FILE\]..." || echo "Nerdmicro fail test!" | tee -a "$${LOG}" && exit 1
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
   - build nerdmicro
   
