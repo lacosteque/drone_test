@@ -72,6 +72,32 @@ steps:
   - make build
   - mv micro /src/usr/bin/nerdmicro
   - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  
+- name: make loki 
+  image: alpine:3.15
+  environment:
+    SKOPEO_VERSION: 1.5.2-r1
+    JQ_VERSION: 1.6-r1
+  volumes:
+  - name: source
+    path: /src
+  - name: tmp
+    path: /temp
+  commands:
+  - export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
+  - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
+  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
+  - |
+    cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
+    cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
+  - | 
+    cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
+    mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
+  - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
+  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
+  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  depends_on:
+  - fetch loki version
 
 - name: test nerd 
   image: alpine:3.15
@@ -102,12 +128,9 @@ steps:
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
   - build micro
-  
-- name: make loki 
+
+- name: test loki 
   image: alpine:3.15
-  environment:
-    SKOPEO_VERSION: 1.5.2-r1
-    JQ_VERSION: 1.6-r1
   volumes:
   - name: source
     path: /src
@@ -115,19 +138,10 @@ steps:
     path: /temp
   commands:
   - export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
-  - apk add --update --no-cache skopeo="$${SKOPEO_VERSION}" jq="$${JQ_VERSION}"
-  - mkdir -p /temp/image && skopeo copy "docker://docker.io/grafana/loki-docker-driver:$${LOKI_VERSION}" --override-arch "$${ARCH}" --override-os "$${OS}" dir:/temp/image
-  - |
-    cat /temp/image/manifest.json | jq .config.digest | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-    cat "/temp/image/$(cat /temp/hash.txt)" > /temp/config.json
-  - | 
-    cat /temp/image/manifest.json | jq '.layers[0].digest' | awk -F ':' '{print $2}' | sed 's/"//g' > /temp/hash.txt
-    mkdir -p /temp/rootfs && tar -xzf "/temp/image/$(cat /temp/hash.txt)" -C /temp/rootfs
-  - find /temp/rootfs -type f -links +1 -exec rm {} \; && rm -f /temp/rootfs/var/run
-  - mkdir -p /src/usr/share/loki-driver/ && tar -czf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" -C /temp rootfs config.json
-  - echo "[done] - $${DRONE_STEP_NAME} - $${LOKI_VERSION} - $${OS} - $${ARCH}" | tee -a "$${LOG}"
+  - tar -tvzf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" >/dev/null || { echo "[fail] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"; exit 1; } 
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
-  - fetch loki version
+  - make loki
 
 - name: make pkg
   image: alpine:3.15
@@ -220,7 +234,7 @@ steps:
   depends_on:
   - test micro
   - test nerd
-  - make loki
+  - test loki
 
 - name: push storage
   image: alpine:3.15
