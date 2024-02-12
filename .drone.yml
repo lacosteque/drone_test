@@ -138,6 +138,7 @@ steps:
     path: /temp
   commands:
   - export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
+  - dd if=/dev/urandom of="/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" bs=1 count=1 seek=$((RANDOM % $(stat -c %s "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz"))) conv=notrunc
   - tar -tvzf "/src/usr/share/loki-driver/loki-docker-driver-$${LOKI_VERSION}.tar.gz" >/dev/null || { echo "[fail] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"; exit 1; } 
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
