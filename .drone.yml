@@ -205,7 +205,7 @@ steps:
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
         -p "$${PACKAGE_PATH}" \
-        -v "$${VERSION}" \
+        -v "$${RELEASE}-$${DRONE_BUILD_NUMBER}" \
         -a "$${ARCH}" \
         --chdir "/src/" \
         --input-type "dir" \
