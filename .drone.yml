@@ -209,7 +209,7 @@ steps:
         apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
-  - PACKAGE_PATH="/temp/$${NAME}-$${VERSION}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/temp/$${NAME}-$${DRONE_BUILD_NUMBER}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
@@ -235,6 +235,23 @@ steps:
   - test nerd
   - test loki
 
+
+- name: test pkg 
+  image: alpine:3.15
+  volumes:
+  - name: source
+    path: /src
+  - name: tmp
+    path: /temp
+  commands:
+  - apk add --update --no-cache rpm
+  - FILE=$(cat "$${PKG_PATH}")
+  - rpm -Kv "$${FILE}" | grep -qE "Header SHA1 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - SHA1" | tee -a "$${LOG}"; exit 1; }
+  - rpm -Kv "$${FILE}" | grep -qE "Header MD5 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - MD5" | tee -a "$${LOG}"; exit 1; }
+  - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
+  depends_on:
+  - make pkg
+
 - name: push storage
   image: alpine:3.15
   environment:
@@ -252,7 +269,7 @@ steps:
   - name: tmp
     path: /temp
   commands:
-  - apk add --no-cache curl bash minio-client --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
+  - apk add --update --no-cache curl bash minio-client --repository=https://dl-cdn.alpinelinux.org/alpine/v3.19/community
   #- FILENAME=$(cat "$${PKG_PATH}" | awk -F'/' '{print $NF}')
   #- FILE=$(cat "$${PKG_PATH}") 
   #- mcli config host add "$${ALIAS}" "$${ENDPOINT}" "$${ACCESS_KEY}" "$${SECRET_KEY}"
