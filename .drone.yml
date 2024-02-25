@@ -247,7 +247,7 @@ steps:
   - apk add --update --no-cache rpm
   - FILE=$(cat "$${PKG_PATH}")
   - rpm -Kv "$${FILE}" | grep -qE "Header SHA1 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - SHA1" | tee -a "$${LOG}"; exit 1; }
-  - rpm -Kv "$${FILE}" | grep -qE "Header MD5 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - MD5" | tee -a "$${LOG}"; exit 1; }
+  - rpm -Kv "$${FILE}" | grep -qE "MD5 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - MD5" | tee -a "$${LOG}"; exit 1; }
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
   - make pkg
@@ -285,7 +285,7 @@ steps:
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
   depends_on:
-  - make pkg
+  - test pkg
 
 - name: send telegram notification
   image: alpine:3.15
