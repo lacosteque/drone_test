@@ -142,7 +142,7 @@ steps:
   depends_on:
   - make loki
 
-- name: make rpm pkg
+- name: make rpm
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
@@ -227,7 +227,7 @@ steps:
   - test loki
 
 
-- name: test pkg 
+- name: test rpm 
   image: alpine:3.15
   volumes:
   - name: source
@@ -241,7 +241,7 @@ steps:
   - rpm -Kv "$${FILE}" | grep -qE "MD5 digest\:\ OK" || { echo "[fail] - $${DRONE_STEP_NAME} - MD5" | tee -a "$${LOG}"; exit 1; }
   - echo "[done] - $${DRONE_STEP_NAME}" | tee -a "$${LOG}"
   depends_on:
-  - make pkg
+  - make rpm
 
 - name: push storage
   image: alpine:3.15
@@ -276,7 +276,7 @@ steps:
   - echo "[done] - $${DRONE_STEP_NAME} - <a href=\"$${URL}/nerd-builds/$${FILENAME}\">download</a>" | tee -a "$${LOG}"
   
   depends_on:
-  - test pkg
+  - test rpm
 
 - name: send telegram notification
   image: alpine:3.15
