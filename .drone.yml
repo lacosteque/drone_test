@@ -146,7 +146,7 @@ steps:
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
-    NAME: nerd-build
+    NAME: nerd
     OUTPUT_TYPE: rpm
     FPM_VERSION: 1.15.1
   volumes:
@@ -209,7 +209,7 @@ steps:
         apk add --no-cache binutils tar
         VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
     fi
-  - PACKAGE_PATH="/temp/$${NAME}-$${DRONE_BUILD_NUMBER}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/temp/$${NAME}-$${RELEASE}-build-$${DRONE_BUILD_NUMBER}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
