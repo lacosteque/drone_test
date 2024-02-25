@@ -142,11 +142,11 @@ steps:
   depends_on:
   - make loki
 
-- name: make pkg
+- name: make rpm pkg
   image: alpine:3.15
   environment:
     TZ: Europe/Moscow
-    NAME: nerd
+    NAME: nerd-build
     OUTPUT_TYPE: rpm
     FPM_VERSION: 1.15.1
   volumes:
@@ -157,7 +157,7 @@ steps:
   commands:
   - export RELEASE=$(cat "$${NERD_VERSION_STORAGE}") && export LOKI_VERSION=$(cat "$${LOKI_VERSION_STORAGE}")
   #- apk update && apk add --no-cache ruby ruby-dev g++ gc make && gem install json etc fpm:"$${FPM_VERSION}"
-  - apk add --no-cache ruby tzdata && gem install fpm
+  - apk add --no-cache ruby rpm && gem install fpm 
   - |
     cat << EOF > after-install.sh
 
@@ -199,17 +199,8 @@ steps:
     
     exit 0
     EOF
-
     
-  - |
-    if [ "$${OUTPUT_TYPE}" = "rpm" ]; then
-        apk add --no-cache rpm
-        VERSION="$(TZ=$${TZ} date +'%Y%m%dT%H%M%S')_$${RELEASE}"
-    elif [ "$${OUTPUT_TYPE}" = "deb" ]; then 
-        apk add --no-cache binutils tar
-        VERSION="$(TZ=$${TZ} date +'%Y%m%d%H%M%S')-$${RELEASE}"
-    fi
-  - PACKAGE_PATH="/temp/$${NAME}-$${RELEASE}-build-$${DRONE_BUILD_NUMBER}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
+  - PACKAGE_PATH="/temp/$${NAME}-$${RELEASE}-$${DRONE_BUILD_NUMBER}.$${ARCH}-loki-$${LOKI_VERSION}.$${OUTPUT_TYPE}"
   - | 
     #Command-line Reference - https://fpm.readthedocs.io/en/latest/cli-reference.html
     fpm -t "$${OUTPUT_TYPE}" \
@@ -229,7 +220,7 @@ steps:
         --url "https://dev.gnivc.ru/gnivc/nerd" . | tee -a fpm.log
   - grep -qE "fatal|error" fpm.log && cat fpm.log | tee -a "$LOG" && exit 1
   - echo "$${PACKAGE_PATH}" > "$${PKG_PATH}"
-  - echo "[done] - $${DRONE_STEP_NAME} - $${VERSION} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
+  - echo "[done] - $${DRONE_STEP_NAME} - $${RELEASE} - $${ARCH} - $${OUTPUT_TYPE}" | tee -a "$${LOG}"
   depends_on:
   - test micro
   - test nerd
